@@ -19,6 +19,10 @@
   <img src="https://img.shields.io/badge/Sponsor-GitHub-333333?style=flat&logo=github&logoColor=white" alt="Sponsor">
 </a>
 
+<a href="https://snowztech.github.io/barecms-docs">
+  <img src="https://img.shields.io/badge/Docs-Live-blue?style=flat&logo=gitbook&logoColor=white" alt="Live Documentation">
+</a>
+
 </div>
 
 ## 📋 Table of Contents
@@ -226,6 +230,7 @@ docker run -d --name barecms-app \
 
 ## 📖 Documentation
 
+- **[Live Documentation](https://snowztech.github.io/barecms-docs)** - Complete documentation
 - **[Contributing Guide](docs/CONTRIBUTING.md)** - How to contribute to BareCMS
 - **[API Documentation](docs/API.md)** - Complete API reference
 - **[Self Hosting Guide](docs/SELF_HOSTING.md)** - Complete Self Hosting Guide
