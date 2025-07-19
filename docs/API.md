@@ -26,7 +26,7 @@ Authorization: Bearer <your-jwt-token>
 
 Retrieve all site content publicly without authentication.
 
-**Endpoint:** `GET /:siteSlug/data`
+**Endpoint:** `GET /api/:siteSlug/data`
 
 **Description:** Returns all collections and entries for a site using its slug. This is the primary endpoint for headless usage.
 
