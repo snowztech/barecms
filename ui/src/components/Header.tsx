@@ -13,7 +13,7 @@ const Header = () => {
           href="/"
           className="logo flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
         >
-          <img src="/icon.svg" alt="logo" className="w-7 h-7" />
+          <img src="/logo.png" alt="logo" className="w-7 h-7" />
           <span className="text-display text-2xl">barecms.</span>
         </a>
 
