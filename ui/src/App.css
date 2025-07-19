@@ -19,10 +19,6 @@
   @apply bg-transparent border border-bare-300 text-bare-700 hover:bg-bare-50 hover:border-bare-400 transition-all duration-200 font-medium;
 }
 
-.btn-bare-dark {
-  @apply bg-transparent border border-bare-600 text-bare-300 hover:bg-bare-800 hover:border-bare-500 transition-all duration-200 font-medium;
-}
-
 /* Custom Card Variants */
 .card-bare {
   @apply bg-base-100 border border-bare-200 rounded-bare shadow-bare hover:shadow-bare-lg transition-all duration-200;
@@ -118,24 +114,34 @@
   @apply py-12 lg:py-16;
 }
 
-/* Dark mode adjustments */
-[data-theme="barecms-dark"] .btn-bare {
+/* Dark mode adjustments - using both html and body selectors for compatibility */
+[data-theme="barecms-dark"] .btn-bare,
+html[data-theme="barecms-dark"] .btn-bare,
+body[data-theme="barecms-dark"] .btn-bare {
   @apply bg-transparent border-bare-600 text-bare-300 hover:bg-bare-800 hover:border-bare-500;
 }
 
-[data-theme="barecms-dark"] .card-bare {
+[data-theme="barecms-dark"] .card-bare,
+html[data-theme="barecms-dark"] .card-bare,
+body[data-theme="barecms-dark"] .card-bare {
   @apply border-bare-700;
 }
 
-[data-theme="barecms-dark"] .input-bare {
+[data-theme="barecms-dark"] .input-bare,
+html[data-theme="barecms-dark"] .input-bare,
+body[data-theme="barecms-dark"] .input-bare {
   @apply border-bare-700 bg-base-100;
 }
 
-[data-theme="barecms-dark"] .pretty-json {
+[data-theme="barecms-dark"] .pretty-json,
+html[data-theme="barecms-dark"] .pretty-json,
+body[data-theme="barecms-dark"] .pretty-json {
   @apply bg-base-200 border-bare-700;
 }
 
-[data-theme="barecms-dark"] .badge-bare {
+[data-theme="barecms-dark"] .badge-bare,
+html[data-theme="barecms-dark"] .badge-bare,
+body[data-theme="barecms-dark"] .badge-bare {
   @apply bg-bare-800 text-bare-300 border-bare-700;
 }
 

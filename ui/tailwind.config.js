@@ -27,16 +27,16 @@ export default {
           950: '#0a0a0a',
         },
         'accent': {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
+          50: '#f8faf9',
+          100: '#f1f5f2',
+          200: '#e2ebe4',
+          300: '#c9d6cc',
+          400: '#a8b8ab',
+          500: '#859289',
+          600: '#6b7770',
+          700: '#56615b',
+          800: '#474f4a',
+          900: '#3c423e',
         }
       },
       spacing: {
@@ -56,16 +56,16 @@ export default {
     themes: [
       {
         barecms: {
-          "primary": "#0ea5e9",
-          "primary-focus": "#0284c7",
+          "primary": "#6b7770",
+          "primary-focus": "#56615b",
           "primary-content": "#ffffff",
 
           "secondary": "#737373",
           "secondary-focus": "#525252",
           "secondary-content": "#ffffff",
 
-          "accent": "#0ea5e9",
-          "accent-focus": "#0284c7",
+          "accent": "#859289",
+          "accent-focus": "#6b7770",
           "accent-content": "#ffffff",
 
           "neutral": "#404040",
@@ -77,7 +77,7 @@ export default {
           "base-300": "#f5f5f5",
           "base-content": "#171717",
 
-          "info": "#0ea5e9",
+          "info": "#6b7770",
           "info-content": "#ffffff",
 
           "success": "#22c55e",
@@ -101,16 +101,16 @@ export default {
           "--tab-radius": "0.375rem",
         },
         "barecms-dark": {
-          "primary": "#38bdf8",
-          "primary-focus": "#0ea5e9",
+          "primary": "#a8b8ab",
+          "primary-focus": "#859289",
           "primary-content": "#0a0a0a",
 
           "secondary": "#a3a3a3",
           "secondary-focus": "#737373",
           "secondary-content": "#0a0a0a",
 
-          "accent": "#38bdf8",
-          "accent-focus": "#0ea5e9",
+          "accent": "#c9d6cc",
+          "accent-focus": "#a8b8ab",
           "accent-content": "#0a0a0a",
 
           "neutral": "#d4d4d4",
@@ -122,7 +122,7 @@ export default {
           "base-300": "#262626",
           "base-content": "#fafafa",
 
-          "info": "#38bdf8",
+          "info": "#a8b8ab",
           "info-content": "#0a0a0a",
 
           "success": "#4ade80",

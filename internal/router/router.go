@@ -6,6 +6,7 @@ import (
 	"barecms/internal/middlewares"
 	"barecms/internal/services"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 )
@@ -14,6 +15,14 @@ func Setup(service *services.Service, config configs.AppConfig) *gin.Engine {
 	router := gin.New()
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
+
+	if config.Env == "dev" {
+		router.Use(cors.New(cors.Config{
+			AllowOrigins: []string{"http://localhost:5173", "http://localhost:5172"},
+			AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+			AllowHeaders: []string{"Origin", "Content-Type", "Authorization"},
+		}))
+	}
 
 	// Serve static files
 	router.Use(static.Serve("/", static.LocalFile("./ui/dist", true)))

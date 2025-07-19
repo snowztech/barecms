@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"fmt"
+	"log/slog"
 
 	"github.com/pkg/errors"
 	"gorm.io/driver/postgres"
@@ -15,8 +15,12 @@ type Storage struct {
 func NewStorage(databaseURL string) (*Storage, error) {
 	database, err := openDatabase(databaseURL)
 	if err != nil {
+		slog.Error("Failed to open database", "error", err)
 		return nil, err
 	}
+
+	slog.Info("Database connection established.")
+
 	return &Storage{DB: database}, nil
 }
 
@@ -31,7 +35,7 @@ func openDatabase(url string) (*gorm.DB, error) {
 		return nil, errors.Wrap(err, "failed to migrate database schema")
 	}
 
-	fmt.Println("Database connection established.")
+	slog.Info("Database migrated successfully.")
 
 	return database, nil
 }
