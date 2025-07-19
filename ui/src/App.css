@@ -1,20 +1,165 @@
+/* Import Tailwind */
+@import url('./index.css');
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
 }
 
+/* Custom BareCMS Components */
 .logo {
-  font-size: 1em;
-  font-weight: bold;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
 }
 
+/* Custom Button Variants */
+.btn-bare {
+  @apply bg-transparent border border-bare-300 text-bare-700 hover:bg-bare-50 hover:border-bare-400 transition-all duration-200 font-medium;
+}
+
+.btn-bare-dark {
+  @apply bg-transparent border border-bare-600 text-bare-300 hover:bg-bare-800 hover:border-bare-500 transition-all duration-200 font-medium;
+}
+
+/* Custom Card Variants */
+.card-bare {
+  @apply bg-base-100 border border-bare-200 rounded-bare shadow-bare hover:shadow-bare-lg transition-all duration-200;
+}
+
+.card-bare-minimal {
+  @apply bg-base-100 border-0 rounded-bare shadow-none hover:bg-base-200 transition-all duration-200;
+}
+
+/* Custom Input Variants */
+.input-bare {
+  @apply border-bare-200 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 bg-base-100;
+}
+
+/* Custom Modal Styling */
+.modal-bare .modal-box {
+  @apply border border-bare-200 shadow-bare-lg max-w-md;
+}
+
+/* Typography Classes */
+.text-display {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.text-mono {
+  font-family: 'IBM Plex Mono', Menlo, Monaco, monospace;
+}
+
+/* Custom JSON Display */
 .pretty-json {
-  background-color: #f6f8fa;
-  color: #333;
-  padding: 10px;
-  border-radius: 4px;
-  font-size: 14px;
-  overflow-x: auto;
-  font-family: "Courier New", Courier, monospace;
+  @apply bg-base-200 text-base-content p-4 rounded-bare text-sm overflow-x-auto font-mono border border-bare-200;
   white-space: pre-wrap;
+}
+
+/* Loading Animation */
+.loading-bare {
+  @apply w-6 h-6 border-2 border-bare-300 border-t-primary rounded-full animate-spin;
+}
+
+/* Custom Breadcrumbs */
+.breadcrumbs-bare .breadcrumbs > ul > li + li:before {
+  @apply text-bare-400;
+  content: "/";
+  margin: 0 0.5rem;
+}
+
+/* Minimal Dropdown */
+.dropdown-bare .dropdown-content {
+  @apply border border-bare-200 shadow-bare-lg backdrop-blur-sm;
+}
+
+/* Focus States */
+.focus-bare:focus {
+  @apply outline-none ring-2 ring-primary/20 ring-offset-2;
+}
+
+/* Hover States */
+.hover-lift:hover {
+  @apply transform -translate-y-0.5 shadow-bare-lg;
+  transition: all 0.2s ease;
+}
+
+/* Minimal Alerts */
+.alert-bare {
+  @apply border border-bare-200 bg-base-100 text-base-content rounded-bare;
+}
+
+.alert-bare-success {
+  @apply border-success/30 bg-success/5 text-success;
+}
+
+.alert-bare-error {
+  @apply border-error/30 bg-error/5 text-error;
+}
+
+.alert-bare-warning {
+  @apply border-warning/30 bg-warning/5 text-warning;
+}
+
+/* Minimal Badge */
+.badge-bare {
+  @apply bg-bare-100 text-bare-700 border border-bare-200 text-xs font-medium px-2 py-1 rounded;
+}
+
+/* Layout Utilities */
+.container-bare {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.section-bare {
+  @apply py-12 lg:py-16;
+}
+
+/* Dark mode adjustments */
+[data-theme="barecms-dark"] .btn-bare {
+  @apply bg-transparent border-bare-600 text-bare-300 hover:bg-bare-800 hover:border-bare-500;
+}
+
+[data-theme="barecms-dark"] .card-bare {
+  @apply border-bare-700;
+}
+
+[data-theme="barecms-dark"] .input-bare {
+  @apply border-bare-700 bg-base-100;
+}
+
+[data-theme="barecms-dark"] .pretty-json {
+  @apply bg-base-200 border-bare-700;
+}
+
+[data-theme="barecms-dark"] .badge-bare {
+  @apply bg-bare-800 text-bare-300 border-bare-700;
+}
+
+/* Additional utility classes for better spacing and layout */
+.space-y-1 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.25rem * var(--tw-space-y-reverse));
+}
+
+.space-y-3 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.75rem * var(--tw-space-y-reverse));
+}
+
+.space-y-4 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+}
+
+.space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
 }

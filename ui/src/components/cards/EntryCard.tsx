@@ -1,5 +1,5 @@
 import useDelete from "@/hooks/useDelete";
-import { Trash } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import Loader from "@/components/Loader";
 import React from "react";
 
@@ -23,59 +23,77 @@ const EntryCard: React.FC<EntryCardProps> = ({
 }) => {
   const { isDeleting, error, handleDelete } = useDelete(
     `/entries/${entryId}`,
-    `/sites/${siteId}/collections/${collectionId}`,
+    `/sites/${siteId}/collections/${collectionId}`
   );
 
+  if (isDeleting) {
+    return (
+      <div className="card-bare p-6 flex items-center justify-center min-h-[120px]">
+        <Loader size="md" variant="minimal" />
+      </div>
+    );
+  }
+
   return (
-    <div className="card p-4 border rounded-lg shadow-md">
-      {isDeleting && <Loader size="md" />}
-      {error && <p className="text-red-500">{error}</p>}
-      {Object.entries(data).map(([key, { value, type }]) => (
-        <div key={key} className="mb-2">
-          {type === "string" && (
-            <p>
-              <strong>{key}:</strong> {value}
-            </p>
-          )}
-          {type === "image" && (
-            <img src={value} alt={value} className="h-auto max-w-[150px]" />
-          )}
-          {type === "date" && (
-            <p>
-              <strong>{key}:</strong> {value}
-            </p>
-          )}
-          {type === "number" && (
-            <p>
-              <strong>{key}:</strong> {value}
-            </p>
-          )}
-          {type === "boolean" && (
-            <p>
-              <strong>{key}:</strong> {value ? "True" : "False"}
-            </p>
-          )}
-          {type === "url" && (
-            <p>
-              <strong>{key}:</strong>{" "}
+    <div className="card-bare p-6 hover-lift group relative">
+      {error && (
+        <div className="alert-bare alert-bare-error p-2 text-xs mb-4">
+          {error}
+        </div>
+      )}
+
+      <div className="space-y-3 mb-4">
+        {Object.entries(data).map(([key, { value, type }]) => (
+          <div key={key} className="space-y-1">
+            <label className="block text-xs font-medium text-bare-600 uppercase tracking-wide">
+              {key}
+            </label>
+            {type === "string" && (
+              <p className="text-sm text-base-content break-words">{value}</p>
+            )}
+            {type === "image" && (
+              <img
+                src={value}
+                alt={value}
+                className="w-full h-24 object-cover rounded border border-bare-200"
+              />
+            )}
+            {type === "date" && (
+              <p className="text-mono text-sm text-base-content">
+                {new Date(value).toLocaleDateString()}
+              </p>
+            )}
+            {type === "number" && (
+              <p className="text-mono text-sm text-base-content">{value}</p>
+            )}
+            {type === "boolean" && (
+              <span
+                className={`badge-bare ${value ? "text-success bg-success/10" : "text-error bg-error/10"}`}
+              >
+                {value ? "True" : "False"}
+              </span>
+            )}
+            {type === "url" && (
               <a
-                className="link"
+                className="text-sm text-primary hover:text-primary-focus transition-colors break-all"
                 href={value}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                See Link
+                {value}
               </a>
-            </p>
-          )}
-        </div>
-      ))}
-      <div className="flex justify-end w-full">
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div className="flex justify-end border-t border-bare-200 pt-3 mt-3">
         <button
           onClick={handleDelete}
-          className="ml-2 text-red-500 hover:text-red-700"
+          className="p-2 text-bare-400 hover:text-error transition-colors rounded"
+          aria-label="Delete entry"
         >
-          <Trash size={16} />
+          <Trash2 size={16} />
         </button>
       </div>
     </div>
