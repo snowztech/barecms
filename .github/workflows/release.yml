@@ -121,7 +121,7 @@ jobs:
           tags: |
             type=semver,pattern={{version}} # e.g., v1.0.0
             type=semver,pattern={{major}}.{{minor}} # e.g., v1.0
-            type=raw,value=latest,enable=${{ github.ref == format('refs/tags/{0}', env.RELEASE_VERSION) && !contains(env.RELEASE_VERSION, '-beta') }} # Only tag 'latest' for non-beta releases
+            type=raw,value=latest,enable=${{ !contains(env.RELEASE_VERSION, '-beta') }} # only tag latest on non-beta releases
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
