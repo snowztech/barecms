@@ -1,19 +1,21 @@
 import React, { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Eye, EyeOff, Loader } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { loading, error, login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const response = await login(email, password);
     if (response.token) {
       localStorage.setItem("token", response.token);
-      window.location.href = "/";
+      navigate("/");
     }
   };
 
@@ -67,9 +69,9 @@ const Login: React.FC = () => {
               </button>
             </div>
           </form>
-          <a href="/register" className="link mt-4">
+          <Link to="/register" className="link mt-4">
             <small>Don't have an account? Register</small>
-          </a>
+          </Link>
         </div>
       </div>
     </div>

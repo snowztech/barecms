@@ -1,6 +1,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useUser } from "@/hooks/useUser";
 import ThemeToggle from "./ThemeToggle";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const { logout } = useAuth();
@@ -9,13 +10,13 @@ const Header = () => {
   return (
     <header className="border-b border-bare-200">
       <div className="container-bare flex justify-between items-center py-6">
-        <a
-          href="/"
+        <Link
+          to="/"
           className="logo flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
         >
           <img src="/logo.png" alt="logo" className="w-7 h-7" />
           <span className="text-display text-2xl">barecms.</span>
-        </a>
+        </Link>
 
         <div className="flex items-center gap-4">
           <ThemeToggle />

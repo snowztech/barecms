@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import Loader from "@/components/Loader";
 import { Eye, EyeOff } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -25,7 +26,7 @@ const Register: React.FC = () => {
     if (!response.error) {
       // If we got a token, redirect to dashboard
       if (response.token) {
-        window.location.href = "/";
+        navigate("/");
       } else {
         // Otherwise redirect to login
         navigate("/login");
@@ -109,9 +110,9 @@ const Register: React.FC = () => {
               </button>
             </div>
           </form>
-          <a href="/login" className="link mt-4">
+          <Link to="/login" className="link mt-4">
             <small>Already have an account? Login</small>
-          </a>
+          </Link>
         </div>
       </div>
     </div>
