@@ -85,7 +85,9 @@ func mapToCollectionDB(collection models.Collection, fieldsJSON []byte) storage.
 
 func mapToCollection(collectionDB storage.CollectionDB) models.Collection {
 	var fields []models.Field
-	json.Unmarshal(collectionDB.Fields, &fields)
+	if err := json.Unmarshal(collectionDB.Fields, &fields); err != nil {
+		return models.Collection{}
+	}
 
 	return models.Collection{
 		ID:     collectionDB.ID,

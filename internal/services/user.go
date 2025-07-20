@@ -82,11 +82,3 @@ func mapToUser(userDB storage.UserDB) models.User {
 		Username: userDB.Username,
 	}
 }
-
-func mapToUserDB(user models.User) storage.UserDB {
-	return storage.UserDB{
-		ID:       user.ID,
-		Email:    user.Email,
-		Username: user.Username,
-	}
-}

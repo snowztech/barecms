@@ -10,6 +10,11 @@ help:
 	@echo ""
 	@echo "  up       - Start the development environment"
 	@echo "  ui       - Build UI (frontend)"
+	@echo "  api      - Run API (backend)"
+	@echo "  dev      - Run UI in development mode with hot-reload"
+	@echo "  lint     - Run linting for UI and API"
+	@echo "  db       - Run PostgreSQL database container"
+	@echo "  db-down  - Stop PostgreSQL database container"
 	@echo "  clean    - Stop and cleanup containers"
 	@echo "  logs     - Show container logs"
 	@echo "  help     - Show this help message"
@@ -34,6 +39,16 @@ db:
 db-down:
 	@echo "Stopping PostgreSQL database container..."
 	docker compose stop postgres && docker compose rm -f postgres
+
+ui-lint:
+	@echo "Running UI linting..."
+	cd $(UI_DIR) && npm run lint
+
+api-lint:
+	@echo "Running Go linting..."
+	golangci-lint run ./...
+
+lint: ui-lint api-lint
 
 api:
 	@echo "Starting Go API server locally..."
