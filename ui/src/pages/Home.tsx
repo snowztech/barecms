@@ -17,53 +17,95 @@ const HomePage: React.FC = () => {
 
   if (userLoading || sitesLoading) {
     return (
-      <div className="py-10 min-h-[600px] flex items-center justify-center">
-        <Loader size="lg" />
+      <div className="container-bare">
+        <div className="min-h-[400px] flex items-center justify-center">
+          <Loader size="lg" variant="minimal" />
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="py-10 min-h-[600px]">
-        <div className="alert alert-error">{error}</div>
+      <div className="container-bare">
+        <div className="alert-bare alert-bare-error p-4 rounded-bare">
+          {error}
+        </div>
       </div>
     );
   }
 
   if (!user) {
-    return <div className="alert alert-warning">Please log in to continue</div>;
+    return (
+      <div className="container-bare">
+        <div className="alert-bare alert-bare-warning p-4 rounded-bare">
+          Please log in to continue
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="py-10 min-h-[600px]">
-      <div className="w-full flex justify-between items-center">
-        <div className="breadcrumbs text-lg">
-          <ul>
-            <li>
-              <a href="/">My Sites</a>
-            </li>
-          </ul>
+    <div className="container-bare">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-display text-3xl font-semibold text-base-content mb-2">
+            My Sites
+          </h1>
+          <p className="text-bare-600 text-base">
+            Manage your content collections and sites
+          </p>
         </div>
-        <button className="btn btn-primary" onClick={openModal}>
+        <button
+          className="btn btn-primary px-6 py-3 font-medium shadow-bare hover:shadow-bare-lg transition-all duration-200"
+          onClick={openModal}
+        >
           + New Site
         </button>
       </div>
 
+      {/* Sites Grid */}
       {sites.length === 0 ? (
-        <p className="mt-3">You don't have any sites yet</p>
+        <div className="text-center py-16">
+          <div className="max-w-md mx-auto">
+            <h3 className="text-display text-xl font-medium text-base-content mb-4">
+              No sites yet
+            </h3>
+            <p className="text-bare-600 mb-6">
+              Create your first site to start managing content collections.
+            </p>
+            <button
+              className="btn btn-primary px-6 py-3 font-medium"
+              onClick={openModal}
+            >
+              Create First Site
+            </button>
+          </div>
+        </div>
       ) : (
-        <div className="sites-container p-2 mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {sites.map((site) => (
             <div
               key={site.id}
-              className="card w-full mx-auto border border-gray-200 p-5 mt-3 rounded cursor-pointer"
+              className="card-bare p-6 hover-lift group cursor-pointer"
             >
-              <h3 className="card-title font-bold">{site.name}</h3>
-              <p className="text-sm">{site.slug}</p>
-              <a className="link flex justify-end" href={`/sites/${site.id}`}>
-                configure
-              </a>
+              <div className="flex flex-col h-full">
+                <h3 className="text-display text-lg font-semibold text-base-content mb-2 group-hover:text-primary transition-colors">
+                  {site.name}
+                </h3>
+                <p className="text-mono text-sm text-bare-600 mb-4 flex-1">
+                  {site.slug}
+                </p>
+                <div className="flex justify-end">
+                  <a
+                    className="text-sm font-medium cursor-pointer text-primary hover:text-primary-focus transition-colors inline-flex items-center gap-1"
+                    href={`/sites/${site.id}`}
+                  >
+                    Configure →
+                  </a>
+                </div>
+              </div>
             </div>
           ))}
         </div>

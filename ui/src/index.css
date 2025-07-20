@@ -3,16 +3,79 @@
 @tailwind utilities;
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Enhanced dark mode font rendering */
+[data-theme="barecms-dark"],
+html[data-theme="barecms-dark"],
+body[data-theme="barecms-dark"] {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-weight: 400;
+}
+
+/* Smooth transitions for theme switching */
+* {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* Custom scrollbar for webkit browsers */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: theme('colors.bare.300');
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: theme('colors.bare.400');
+}
+
+[data-theme="barecms-dark"] ::-webkit-scrollbar-thumb {
+  background: theme('colors.bare.600');
+}
+
+[data-theme="barecms-dark"] ::-webkit-scrollbar-thumb:hover {
+  background: theme('colors.bare.500');
+}
+
+/* Selection styles */
+::selection {
+  background-color: theme('colors.primary');
+  color: theme('colors.primary-content');
+}
+
+[data-theme="barecms-dark"] ::selection {
+  background-color: #a8b8ab;
+  color: #0a0a0a;
+}
+
+/* Focus visible for accessibility */
+.focus-visible:focus-visible {
+  outline: 2px solid theme('colors.primary');
+  outline-offset: 2px;
+}
+
+/* Dark mode base improvements */
+[data-theme="barecms-dark"] body,
+html[data-theme="barecms-dark"] body,
+body[data-theme="barecms-dark"] {
+  background-color: #0a0a0a;
+  color: #f5f5f5;
 }

@@ -28,113 +28,168 @@ const SiteDetailsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <main className="py-10 min-h-[600px] flex items-center justify-center">
-        <Loader size="lg" />
-      </main>
+      <div className="container-bare">
+        <div className="min-h-[400px] flex items-center justify-center">
+          <Loader size="lg" variant="minimal" />
+        </div>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <main className="py-10 min-h-[600px]">
-        <div className="alert alert-error">{error}</div>
-        <a href="/" className="btn btn-primary mt-4">
-          Back to Sites
+      <div className="container-bare">
+        <div className="alert-bare alert-bare-error p-4 rounded-bare mb-4">
+          {error}
+        </div>
+        <a href="/" className="btn btn-primary">
+          ← Back to Sites
         </a>
-      </main>
+      </div>
     );
   }
 
   if (!site) {
     return (
-      <main className="py-10 min-h-[600px]">
-        <div className="alert alert-warning">Site not found</div>
-        <a href="/" className="btn btn-primary mt-4">
-          Back to Sites
+      <div className="container-bare">
+        <div className="alert-bare alert-bare-warning p-4 rounded-bare mb-4">
+          Site not found
+        </div>
+        <a href="/" className="btn btn-primary">
+          ← Back to Sites
         </a>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="py-10 min-h-[600px]">
-      <div className="w-full flex justify-between items-center">
-        <div className="breadcrumbs text-lg">
-          <ul>
+    <div className="container-bare">
+      {/* Breadcrumbs */}
+      <nav className="mb-6">
+        <div className="breadcrumbs text-sm">
+          <ul className="flex items-center space-x-2 text-bare-600">
             <li>
-              <a href="/">My Sites</a>
+              <a href="/" className="hover:text-primary transition-colors">
+                My Sites
+              </a>
             </li>
-            <li>
-              <a href={`/sites/${id}`}>{site.name}</a>
+            <li className="before:content-['/'] before:mx-2">
+              <span className="text-base-content font-medium">{site.name}</span>
             </li>
           </ul>
         </div>
-        <div className="actions flex items-center gap-2">
-          <button className="btn btn-sm btn-primary" onClick={openDataModal}>
+      </nav>
+
+      {/* Header Section */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
+        <div className="flex-1">
+          <h1 className="text-display text-3xl font-semibold text-base-content mb-2">
+            {site.name}
+          </h1>
+          <div className="space-y-1">
+            <p className="text-mono text-sm text-bare-600">
+              <span className="font-medium">ID:</span> {site.id}
+            </p>
+            <p className="text-mono text-sm text-bare-600">
+              <span className="font-medium">Slug:</span> {site.slug}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          <button className="btn btn-primary px-4 py-2" onClick={openDataModal}>
             View Site Data
           </button>
-          <div className="dropdown">
-            <div tabIndex={0} role="button" className="btn btn-sm btn-outline">
+          <div className="dropdown dropdown-end">
+            <div tabIndex={0} role="button" className="btn btn-bare px-4 py-2">
               Settings
             </div>
             <ul
               tabIndex={0}
-              className="dropdown-content menu bg-base-100 rounded-box z-[1] p-2 w-40 shadow"
+              className="dropdown-content dropdown-bare menu bg-base-100 rounded-bare z-[1] p-2 w-40 shadow-bare-lg mt-2"
             >
-              <li className="text-sm">
-                <span onClick={handleDelete}>
+              <li>
+                <button
+                  onClick={handleDelete}
+                  className="text-sm text-error hover:bg-error/10 transition-colors w-full text-left"
+                  disabled={isDeleting}
+                >
                   {isDeleting ? "Deleting..." : "Delete Site"}
-                </span>
+                </button>
               </li>
             </ul>
           </div>
         </div>
       </div>
 
-      <div className="w-full">
-        <h2 className="text-2xl font-semibold mb-2">{site.name}</h2>
-        <p className="text-gray-600 mb-4">Id: {site.id}</p>
-        <p className="text-gray-600 mb-4">Slug: {site.slug}</p>
-        <hr />
-
-        <div className="collections-container flex flex-col gap-5">
-          <div className="w-full flex justify-between items-center mt-6">
-            <h3 className="text-xl font-semibold">Collections</h3>
-            <button className="btn" onClick={openCollectionModal}>
-              + New Collection
-            </button>
+      {/* Collections Section */}
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 className="text-display text-2xl font-semibold text-base-content mb-2">
+              Collections
+            </h2>
+            <p className="text-bare-600">
+              Organize your content into collections
+            </p>
           </div>
-
-          {collections.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-              {collections.map((collection) => (
-                <div
-                  key={collection.id}
-                  className="card w-full mx-auto border border-gray-200 p-5 mt-3 rounded cursor-pointer"
-                >
-                  <h3 className="card-title font-bold">{collection.name}</h3>
-                  <p className="text-sm">{collection.slug}</p>
-                  <a
-                    className="link flex justify-end"
-                    href={`/sites/${site.id}/collections/${collection.id}`}
-                  >
-                    view
-                  </a>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-3">No collections found</p>
-          )}
+          <button
+            className="btn btn-primary px-6 py-3 font-medium"
+            onClick={openCollectionModal}
+          >
+            + New Collection
+          </button>
         </div>
 
-        <CreateCollectionModal
-          dialogRef={collectionModalRef}
-          siteId={site.id}
-        />
-        <ViewSiteDataModal dialogRef={viewDataModalRef} siteSlug={site.slug} />
+        {collections.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="max-w-md mx-auto">
+              <h3 className="text-display text-xl font-medium text-base-content mb-4">
+                No collections yet
+              </h3>
+              <p className="text-bare-600 mb-6">
+                Create your first collection to start organizing content.
+              </p>
+              <button
+                className="btn btn-primary px-6 py-3 font-medium"
+                onClick={openCollectionModal}
+              >
+                Create First Collection
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {collections.map((collection) => (
+              <div
+                key={collection.id}
+                className="card-bare p-6 hover-lift group cursor-pointer"
+              >
+                <div className="flex flex-col h-full">
+                  <h3 className="text-display text-lg font-semibold text-base-content mb-2 group-hover:text-primary transition-colors">
+                    {collection.name}
+                  </h3>
+                  <p className="text-mono text-sm text-bare-600 mb-4 flex-1">
+                    {collection.slug}
+                  </p>
+                  <div className="flex justify-end">
+                    <a
+                      className="text-sm font-medium text-primary hover:text-primary-focus transition-colors inline-flex items-center gap-1"
+                      href={`/sites/${site.id}/collections/${collection.id}`}
+                    >
+                      View →
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-    </main>
+
+      <CreateCollectionModal siteId={site.id} dialogRef={collectionModalRef} />
+      <ViewSiteDataModal siteSlug={site.slug} dialogRef={viewDataModalRef} />
+    </div>
   );
 };
 

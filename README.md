@@ -48,11 +48,7 @@
 
 ## 🎬 Demo
 
-![BareCMS Demo](assets/rec.gif)
-
-_See BareCMS in action - create sites, manage collections, and publish content with ease._
-
----
+![BareCMS Demo](assets/demo.gif)
 
 ## ✨ Features
 
