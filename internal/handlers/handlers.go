@@ -17,6 +17,6 @@ func NewHandler(service *services.Service, config configs.AppConfig) *Handler {
 	return &Handler{Service: service, Config: config}
 }
 
-func (h *Handler) Status(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"status": "OK"})
+func (h *Handler) Health(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"status": "up"})
 }

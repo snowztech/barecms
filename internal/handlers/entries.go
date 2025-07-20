@@ -19,7 +19,7 @@ func (h *Handler) CreateEntry(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Collection created!"})
+	c.JSON(http.StatusCreated, gin.H{"message": "Entry created!"})
 }
 
 func (h *Handler) GetEntry(c *gin.Context) {

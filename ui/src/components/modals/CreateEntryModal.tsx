@@ -1,4 +1,4 @@
-import { Field } from "@/types";
+import { Field, FieldType } from "@/types/fields";
 import { useEffect, useState } from "react";
 import { useApi } from "@/hooks/useApi";
 
@@ -27,13 +27,19 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
     // Initialize form state with empty values for each field
     const initialFormState: Record<string, any> = {};
     fields.forEach((field) => {
-      initialFormState[field.name] = "";
+      if (field.type === FieldType.BOOLEAN) {
+        initialFormState[field.name] = "false";
+      } else {
+        initialFormState[field.name] = "";
+      }
     });
     setFormState(initialFormState);
   }, [fields]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormState((prevState) => ({ ...prevState, [name]: value }));
@@ -43,7 +49,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
     console.log("fields", fields);
 
     const hasEmptyFields = fields.some(
-      (field) => formState[field.name].trim() === "",
+      (field) => formState[field.name].trim() === ""
     );
 
     console.log("hasEmptyFields", hasEmptyFields);
@@ -64,7 +70,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
           };
           return acc;
         },
-        {} as Record<string, { value: any; type: string }>,
+        {} as Record<string, { value: any; type: string }>
       );
 
       await request({
@@ -86,7 +92,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
 
   const renderFieldInput = (field: Field) => {
     switch (field.type) {
-      case "url":
+      case FieldType.URL:
         return (
           <input
             type="url"
@@ -98,7 +104,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             required
           />
         );
-      case "string":
+      case FieldType.STRING:
         return (
           <input
             type="text"
@@ -110,7 +116,18 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             required
           />
         );
-      case "number":
+      case FieldType.TEXT:
+        return (
+          <textarea
+            id={field.name}
+            name={field.name}
+            value={formState[field.name]}
+            onChange={handleInputChange}
+            className="textarea textarea-bordered w-full"
+            required
+          />
+        );
+      case FieldType.NUMBER:
         return (
           <input
             type="number"
@@ -122,7 +139,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             required
           />
         );
-      case "boolean":
+      case FieldType.BOOLEAN:
         return (
           <select
             id={field.name}
@@ -139,7 +156,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             <option value="false">False</option>
           </select>
         );
-      case "date":
+      case FieldType.DATE:
         return (
           <input
             type="date"
@@ -151,7 +168,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             required
           />
         );
-      case "image":
+      case FieldType.IMAGE:
         return (
           <input
             type="url"

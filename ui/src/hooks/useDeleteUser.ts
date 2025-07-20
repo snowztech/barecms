@@ -9,7 +9,7 @@ const useDeleteUser = (userId: string) => {
       setIsDeleting(true);
       setError(null);
       try {
-        const res = await apiClient.delete(`/auth/user/${userId}`);
+        const res = await apiClient.delete(`/user/${userId}`);
         if (res.status === 200) {
           localStorage.removeItem("token");
           window.location.href = "/login";

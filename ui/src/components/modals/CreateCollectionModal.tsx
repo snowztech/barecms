@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import { useApi } from "@/hooks/useApi";
-
-interface Field {
-  name: string;
-  type: string;
-}
+import { Field, FieldType, VALID_FIELD_TYPES } from "@/types/fields";
 
 interface CreateCollectionModalProps {
   siteId: string;
@@ -18,13 +14,13 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
   const [collectionName, setCollectionName] = useState("");
   const [fields, setFields] = useState<Field[]>([]);
   const [newFieldName, setNewFieldName] = useState("");
-  const [newFieldType, setNewFieldType] = useState("string");
+  const [newFieldType, setNewFieldType] = useState<FieldType>(FieldType.STRING);
   const [error, setError] = useState<string | null>(null);
   const [fieldsError, setFieldsError] = useState<string | null>(null);
   const { request, loading } = useApi();
 
   const handleCollectionNameChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: React.ChangeEvent<HTMLInputElement>
   ) => {
     setCollectionName(e.target.value);
     setError(null);
@@ -32,12 +28,6 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
 
   const handleNewFieldNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewFieldName(e.target.value);
-  };
-
-  const handleNewFieldTypeChange = (
-    e: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    setNewFieldType(e.target.value);
   };
 
   const addField = () => {
@@ -57,11 +47,11 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
       ...fields,
       {
         name: newFieldName.trim().toLowerCase(),
-        type: newFieldType.trim().toLowerCase(),
+        type: newFieldType,
       },
     ]);
     setNewFieldName("");
-    setNewFieldType("string");
+    setNewFieldType(FieldType.STRING);
   };
 
   const removeField = (index: number) => {
@@ -151,14 +141,13 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
             <select
               className="select select-bordered"
               value={newFieldType}
-              onChange={handleNewFieldTypeChange}
+              onChange={(e) => setNewFieldType(e.target.value as FieldType)}
             >
-              <option value="string">String</option>
-              <option value="number">Number</option>
-              <option value="boolean">Boolean</option>
-              <option value="date">Date</option>
-              <option value="image">Image</option>
-              <option value="url">URL</option>
+              {VALID_FIELD_TYPES.map((type: FieldType) => (
+                <option key={type} value={type}>
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </option>
+              ))}
             </select>
             <button className="btn btn-primary ml-2" onClick={addField}>
               Add Field

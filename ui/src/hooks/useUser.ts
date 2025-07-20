@@ -17,7 +17,7 @@ export const useUser = () => {
         setUser(null);
         return;
       }
-      const response = await apiClient.get("/auth/user");
+      const response = await apiClient.get("/user");
       setUser(response.data);
     } catch (err: any) {
       setError(

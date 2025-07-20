@@ -2,10 +2,11 @@ import useDelete from "@/hooks/useDelete";
 import { Trash2 } from "lucide-react";
 import Loader from "@/components/Loader";
 import React from "react";
+import { FieldType } from "@/types/fields";
 
 interface EntryData {
   value: any;
-  type: string;
+  type: FieldType;
 }
 
 interface EntryCardProps {
@@ -48,32 +49,48 @@ const EntryCard: React.FC<EntryCardProps> = ({
             <label className="block text-xs font-medium text-bare-600 uppercase tracking-wide">
               {key}
             </label>
-            {type === "string" && (
+            {type === FieldType.STRING && (
               <p className="text-sm text-base-content break-words">{value}</p>
             )}
-            {type === "image" && (
+            {type === FieldType.TEXT && (
+              <div className="text-sm text-base-content break-words">
+                {value && value.length > 150 ? (
+                  <details className="cursor-pointer">
+                    <summary className="hover:text-primary transition-colors">
+                      {value.substring(0, 150)}...
+                    </summary>
+                    <div className="mt-2 text-sm">{value}</div>
+                  </details>
+                ) : (
+                  <p className="text-sm text-base-content break-words">
+                    {value}
+                  </p>
+                )}
+              </div>
+            )}
+            {type === FieldType.IMAGE && (
               <img
                 src={value}
                 alt={value}
                 className="w-full h-24 object-contain rounded border border-bare-200"
               />
             )}
-            {type === "date" && (
+            {type === FieldType.DATE && (
               <p className="text-mono text-sm text-base-content">
                 {new Date(value).toLocaleDateString()}
               </p>
             )}
-            {type === "number" && (
+            {type === FieldType.NUMBER && (
               <p className="text-mono text-sm text-base-content">{value}</p>
             )}
-            {type === "boolean" && (
+            {type === FieldType.BOOLEAN && (
               <span
-                className={`badge-bare ${value ? "text-success bg-success/10" : "text-error bg-error/10"}`}
+                className={`badge-bare ${value === "true" || value === true ? "text-success bg-teal-500/10" : "text-error bg-rose-500/10"}`}
               >
-                {value ? "Yes" : "No"}
+                {value === "true" || value === true ? "Yes" : "No"}
               </span>
             )}
-            {type === "url" && (
+            {type === FieldType.URL && (
               <a
                 className="text-sm text-primary hover:text-primary-focus transition-colors break-all"
                 href={value}

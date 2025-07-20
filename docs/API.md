@@ -2,19 +2,19 @@
 
 ## Overview
 
-BareCMS provides a RESTful API for content management and public data access. All authenticated endpoints require a JWT token in the Authorization header.
+BareCMS provides a RESTful API for content management and public data access. All authenticated endpoints require a JWT token in the `Authorization` header.
 
 ## Base URL
 
-```
+```bash
 http://localhost:8080
 ```
 
 ## Authentication
 
-Include the JWT token in the Authorization header for all authenticated endpoints:
+Include the JWT token in the `Authorization` header for all authenticated endpoints:
 
-```
+```bash
 Authorization: Bearer <your-jwt-token>
 ```
 
@@ -22,13 +22,35 @@ Authorization: Bearer <your-jwt-token>
 
 ## 🌐 Public Endpoints
 
+### Health Check
+
+Check if the API is running and healthy.
+
+**Endpoint:** `GET /api/health`
+
+**Description:** Returns the health status of the API. No authentication required.
+
+**Example Request:**
+
+```bash
+curl -X GET http://localhost:8080/api/health
+```
+
+**Example Response:**
+
+```json
+{
+  "status": "up"
+}
+```
+
 ### Get Site Data
 
-Retrieve all site content publicly without authentication.
+Retrieve all site content publicly without authentication. This is the primary endpoint for headless usage.
 
 **Endpoint:** `GET /api/:siteSlug/data`
 
-**Description:** Returns all collections and entries for a site using its slug. This is the primary endpoint for headless usage.
+**Description:** Returns all collections and entries for a site using its slug. BareCMS keeps it simple by organizing all content under a `data` field, where each collection is accessible by its slug containing an array of entries with their field values directly accessible.
 
 **Parameters:**
 
@@ -37,63 +59,47 @@ Retrieve all site content publicly without authentication.
 **Example Request:**
 
 ```bash
-curl -X GET http://localhost:8080/my-blog/data
+curl -X GET http://localhost:8080/api/myblog/data
 ```
 
 **Example Response:**
 
 ```json
 {
-  "site": {
-    "id": 1,
-    "name": "My Blog",
-    "slug": "my-blog",
-    "description": "A simple blog site"
-  },
-  "collections": [
-    {
-      "id": 1,
-      "name": "Posts",
-      "slug": "posts",
-      "description": "Blog posts collection",
-      "entries": [
-        {
-          "id": 1,
-          "title": "Welcome to BareCMS",
-          "content": "This is my first blog post using BareCMS...",
-          "slug": "welcome-to-barecms",
-          "created_at": "2024-01-15T10:30:00Z",
-          "updated_at": "2024-01-15T10:30:00Z"
-        },
-        {
-          "id": 2,
-          "title": "Getting Started Guide",
-          "content": "Here's how to get started with BareCMS...",
-          "slug": "getting-started-guide",
-          "created_at": "2024-01-16T14:22:00Z",
-          "updated_at": "2024-01-16T14:22:00Z"
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "name": "Pages",
-      "slug": "pages",
-      "description": "Static pages collection",
-      "entries": [
-        {
-          "id": 3,
-          "title": "About",
-          "content": "Learn more about our mission...",
-          "slug": "about",
-          "created_at": "2024-01-15T11:00:00Z",
-          "updated_at": "2024-01-15T11:00:00Z"
-        }
-      ]
-    }
-  ]
+  "id": "44394f36-daa3-451c-970f-59238c46ce36",
+  "name": "myblog",
+  "slug": "myblog",
+  "data": {
+    "articles": [
+      {
+        "content": "this is my article post content",
+        "draft": "false",
+        "published": "2025-07-21",
+        "title": "my sample article"
+      }
+    ],
+    "products": [
+      {
+        "name": "Sample Product",
+        "price": "29.99",
+        "description": "A great product for everyone"
+      }
+    ]
+  }
 }
 ```
+
+**Response Structure:**
+
+- `id` - The unique identifier of the site
+- `name` - The name of the site
+- `slug` - The URL-friendly slug of the site
+- `data` - Object containing all collections, where:
+  - Each key is a collection slug (e.g., "articles", "products")
+  - Each value is an array of entries for that collection
+  - Entry objects contain field names as keys with their values directly accessible (no nested `data` object)
+
+This simple structure makes it easy to consume in frontend applications - you can directly access `response.data.articles` to get all articles, or `response.data.products` for products, etc.
 
 ---
 
@@ -110,7 +116,8 @@ Create a new user account.
 ```json
 {
   "email": "user@example.com",
-  "password": "securepassword"
+  "password": "securepassword",
+  "username": "myuser"
 }
 ```
 
@@ -118,11 +125,13 @@ Create a new user account.
 
 ```json
 {
-  "message": "User registered successfully",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "user": {
-    "id": 1,
-    "email": "user@example.com"
-  }
+    "id": "user123",
+    "email": "user@example.com",
+    "username": "myuser"
+  },
+  "message": "User created successfully"
 }
 ```
 
@@ -147,8 +156,9 @@ Authenticate and receive a JWT token.
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "user": {
-    "id": 1,
-    "email": "user@example.com"
+    "id": "user123",
+    "email": "user@example.com",
+    "username": "myuser"
   }
 }
 ```
@@ -161,7 +171,7 @@ Invalidate the current session.
 
 **Headers:**
 
-```
+```bash
 Authorization: Bearer <your-jwt-token>
 ```
 
@@ -169,13 +179,63 @@ Authorization: Bearer <your-jwt-token>
 
 ```json
 {
-  "message": "Logged out successfully"
+  "message": "User logged out successfully"
 }
 ```
 
 ---
 
-## 🏢 Sites Management
+## 👤 User Management (Authenticated)
+
+### Get Authenticated User
+
+Retrieve details of the currently authenticated user. Requires authentication.
+
+**Endpoint:** `GET /api/user`
+
+**Headers:**
+
+```bash
+Authorization: Bearer <your-jwt-token>
+```
+
+**Response:**
+
+```json
+{
+  "id": "user123",
+  "email": "user@example.com",
+  "username": "myuser"
+}
+```
+
+### Delete User
+
+Delete the currently authenticated user. Requires authentication.
+
+**Endpoint:** `DELETE /api/user/:userId`
+
+**Parameters:**
+
+- `userId` (path) - The ID of the user to delete (must match authenticated user)
+
+**Headers:**
+
+```bash
+Authorization: Bearer <your-jwt-token>
+```
+
+**Response:**
+
+```json
+{
+  "message": "User deleted successfully"
+}
+```
+
+---
+
+## 🏢 Sites Management (Authenticated)
 
 ### List Sites
 
@@ -185,7 +245,7 @@ Get all sites for the authenticated user.
 
 **Headers:**
 
-```
+```bash
 Authorization: Bearer <your-jwt-token>
 ```
 
@@ -195,12 +255,16 @@ Authorization: Bearer <your-jwt-token>
 {
   "sites": [
     {
-      "id": 1,
+      "id": "site123",
+      "userId": "user789",
       "name": "My Blog",
-      "slug": "my-blog",
-      "description": "A simple blog site",
-      "created_at": "2024-01-15T10:00:00Z",
-      "updated_at": "2024-01-15T10:00:00Z"
+      "slug": "my-blog"
+    },
+    {
+      "id": "site456",
+      "userId": "user789",
+      "name": "My Portfolio",
+      "slug": "my-portfolio"
     }
   ]
 }
@@ -208,13 +272,13 @@ Authorization: Bearer <your-jwt-token>
 
 ### Create Site
 
-Create a new site.
+Create a new site for the authenticated user.
 
 **Endpoint:** `POST /api/sites`
 
 **Headers:**
 
-```
+```bash
 Authorization: Bearer <your-jwt-token>
 ```
 
@@ -222,9 +286,8 @@ Authorization: Bearer <your-jwt-token>
 
 ```json
 {
-  "name": "My Portfolio",
-  "slug": "my-portfolio",
-  "description": "Personal portfolio website"
+  "name": "My New Site",
+  "userId": "user789"
 }
 ```
 
@@ -232,26 +295,23 @@ Authorization: Bearer <your-jwt-token>
 
 ```json
 {
-  "site": {
-    "id": 2,
-    "name": "My Portfolio",
-    "slug": "my-portfolio",
-    "description": "Personal portfolio website",
-    "created_at": "2024-01-16T09:00:00Z",
-    "updated_at": "2024-01-16T09:00:00Z"
-  }
+  "message": "Site created!"
 }
 ```
 
 ### Get Site Details
 
-Retrieve details of a specific site.
+Retrieve details of a specific site by its ID.
 
 **Endpoint:** `GET /api/sites/:id`
 
+**Parameters:**
+
+- `id` (path) - The ID of the site to retrieve
+
 **Headers:**
 
-```
+```bash
 Authorization: Bearer <your-jwt-token>
 ```
 
@@ -260,62 +320,27 @@ Authorization: Bearer <your-jwt-token>
 ```json
 {
   "site": {
-    "id": 1,
+    "id": "site123",
+    "userId": "user789",
     "name": "My Blog",
-    "slug": "my-blog",
-    "description": "A simple blog site",
-    "created_at": "2024-01-15T10:00:00Z",
-    "updated_at": "2024-01-15T10:00:00Z"
+    "slug": "my-blog"
   }
 }
 ```
 
-### Update Site
+### Get Site Details with Collections
 
-Update an existing site.
+Retrieve details of a specific site by its ID, including all its collections.
 
-**Endpoint:** `PUT /api/sites/:id`
+**Endpoint:** `GET /api/sites/:id/collections`
 
-**Headers:**
+**Parameters:**
 
-```
-Authorization: Bearer <your-jwt-token>
-```
-
-**Request Body:**
-
-```json
-{
-  "name": "My Updated Blog",
-  "description": "Updated description"
-}
-```
-
-### Delete Site
-
-Delete a site and all its collections/entries.
-
-**Endpoint:** `DELETE /api/sites/:id`
+- `id` (path) - The ID of the site
 
 **Headers:**
 
-```
-Authorization: Bearer <your-jwt-token>
-```
-
----
-
-## 📚 Collections Management
-
-### List Collections
-
-Get all collections for a specific site.
-
-**Endpoint:** `GET /api/sites/:siteId/collections`
-
-**Headers:**
-
-```
+```bash
 Authorization: Bearer <your-jwt-token>
 ```
 
@@ -323,29 +348,65 @@ Authorization: Bearer <your-jwt-token>
 
 ```json
 {
+  "site": {
+    "id": "site123",
+    "userId": "user789",
+    "name": "My Blog",
+    "slug": "my-blog"
+  },
   "collections": [
     {
-      "id": 1,
+      "id": "col123",
+      "siteId": "site123",
       "name": "Posts",
       "slug": "posts",
-      "description": "Blog posts collection",
-      "site_id": 1,
-      "created_at": "2024-01-15T10:15:00Z",
-      "updated_at": "2024-01-15T10:15:00Z"
+      "fields": [
+        { "name": "title", "type": "string" },
+        { "name": "content", "type": "string" }
+      ],
+      "entries": []
     }
   ]
 }
 ```
 
-### Create Collection
+### Delete Site
 
-Create a new collection within a site.
+Delete a site and all its associated collections and entries. This action is irreversible.
 
-**Endpoint:** `POST /api/sites/:siteId/collections`
+**Endpoint:** `DELETE /api/sites/:id`
+
+**Parameters:**
+
+- `id` (path) - The ID of the site to delete
 
 **Headers:**
 
+```bash
+Authorization: Bearer <your-jwt-token>
 ```
+
+**Response:**
+
+```json
+{
+  "message": "Site deleted!"
+}
+```
+
+---
+
+## 📚 Collections Management (Authenticated)
+
+### Create Collection
+
+Create a new collection.
+
+**Endpoint:** `POST /api/collections`
+
+**Headers:**
+
+```bash
 Authorization: Bearer <your-jwt-token>
 ```
 
@@ -353,9 +414,32 @@ Authorization: Bearer <your-jwt-token>
 
 ```json
 {
+  "siteId": "site123",
   "name": "Products",
-  "slug": "products",
-  "description": "Product catalog collection"
+  "fields": [
+    { "name": "title", "type": "string" },
+    { "name": "price", "type": "number" }
+  ]
+}
+```
+
+**Supported Field Types:**
+
+| Type      | Description       | Input           |
+| --------- | ----------------- | --------------- |
+| `string`  | Single line text  | Text input      |
+| `text`    | Multi-line text   | Textarea        |
+| `number`  | Numeric values    | Number input    |
+| `boolean` | True/false values | Select (Yes/No) |
+| `date`    | Date picker       | Date input      |
+| `image`   | Image URL         | URL input       |
+| `url`     | Website links     | URL input       |
+
+**Response:**
+
+```json
+{
+  "message": "Collection created!"
 }
 ```
 
@@ -365,22 +449,109 @@ Retrieve details of a specific collection.
 
 **Endpoint:** `GET /api/collections/:id`
 
-**Headers:**
+**Parameters:**
 
-```
-Authorization: Bearer <your-jwt-token>
-```
-
-### Update Collection
-
-Update an existing collection.
-
-**Endpoint:** `PUT /api/collections/:id`
+- `id` (path) - The ID of the collection
 
 **Headers:**
 
-```
+```bash
 Authorization: Bearer <your-jwt-token>
+```
+
+**Response:**
+
+```json
+{
+  "id": "col123",
+  "siteId": "site123",
+  "name": "Posts",
+  "slug": "posts",
+  "fields": [
+    { "name": "title", "type": "string" },
+    { "name": "content", "type": "string" }
+  ],
+  "entries": [
+    {
+      "id": "entry1",
+      "collection_id": "col123",
+      "data": {
+        "title": "Sample Post",
+        "content": "Sample content"
+      }
+    }
+  ]
+}
+```
+
+### Get Collections by Site ID
+
+Get all collections for a specific site.
+
+**Endpoint:** `GET /api/collections/:siteId`
+
+**Parameters:**
+
+- `siteId` (path) - The ID of the site
+
+**Headers:**
+
+```bash
+Authorization: Bearer <your-jwt-token>
+```
+
+**Response:**
+
+```json
+{
+  "collections": [
+    {
+      "id": "col123",
+      "siteId": "site123",
+      "name": "Posts",
+      "slug": "posts",
+      "fields": [{ "name": "title", "type": "string" }],
+      "entries": []
+    }
+  ]
+}
+```
+
+### Get Collection Entries
+
+Get all entries for a specific collection.
+
+**Endpoint:** `GET /api/collections/:id/entries`
+
+**Parameters:**
+
+- `id` (path) - The ID of the collection
+
+**Headers:**
+
+```bash
+Authorization: Bearer <your-jwt-token>
+```
+
+**Response:**
+
+```json
+{
+  "id": "col123",
+  "siteId": "site123",
+  "name": "Posts",
+  "slug": "posts",
+  "fields": [{ "name": "title", "type": "string" }],
+  "entries": [
+    {
+      "id": "entry1",
+      "collection_id": "col123",
+      "data": {
+        "title": "Sample Post"
+      }
+    }
+  ]
+}
 ```
 
 ### Delete Collection
@@ -389,25 +560,13 @@ Delete a collection and all its entries.
 
 **Endpoint:** `DELETE /api/collections/:id`
 
-**Headers:**
+**Parameters:**
 
-```
-Authorization: Bearer <your-jwt-token>
-```
-
----
-
-## 📝 Entries Management
-
-### List Entries
-
-Get all entries for a specific collection.
-
-**Endpoint:** `GET /api/collections/:collectionId/entries`
+- `id` (path) - The ID of the collection
 
 **Headers:**
 
-```
+```bash
 Authorization: Bearer <your-jwt-token>
 ```
 
@@ -415,29 +574,23 @@ Authorization: Bearer <your-jwt-token>
 
 ```json
 {
-  "entries": [
-    {
-      "id": 1,
-      "title": "Welcome to BareCMS",
-      "content": "This is my first blog post...",
-      "slug": "welcome-to-barecms",
-      "collection_id": 1,
-      "created_at": "2024-01-15T10:30:00Z",
-      "updated_at": "2024-01-15T10:30:00Z"
-    }
-  ]
+  "message": "Collection deleted!"
 }
 ```
 
+---
+
+## 📝 Entries Management (Authenticated)
+
 ### Create Entry
 
-Create a new entry within a collection.
+Create a new entry.
 
-**Endpoint:** `POST /api/collections/:collectionId/entries`
+**Endpoint:** `POST /api/entries`
 
 **Headers:**
 
-```
+```bash
 Authorization: Bearer <your-jwt-token>
 ```
 
@@ -445,9 +598,29 @@ Authorization: Bearer <your-jwt-token>
 
 ```json
 {
-  "title": "New Blog Post",
-  "content": "Content of the blog post...",
-  "slug": "new-blog-post"
+  "collectionId": "col123",
+  "data": {
+    "title": {
+      "value": "New Blog Post",
+      "type": "string"
+    },
+    "content": {
+      "value": "Content of the blog post...",
+      "type": "string"
+    },
+    "published": {
+      "value": "true",
+      "type": "boolean"
+    }
+  }
+}
+```
+
+**Response:**
+
+```json
+{
+  "message": "Collection created!"
 }
 ```
 
@@ -457,30 +630,27 @@ Retrieve details of a specific entry.
 
 **Endpoint:** `GET /api/entries/:id`
 
-**Headers:**
+**Parameters:**
 
-```
-Authorization: Bearer <your-jwt-token>
-```
-
-### Update Entry
-
-Update an existing entry.
-
-**Endpoint:** `PUT /api/entries/:id`
+- `id` (path) - The ID of the entry
 
 **Headers:**
 
-```
+```bash
 Authorization: Bearer <your-jwt-token>
 ```
 
-**Request Body:**
+**Response:**
 
 ```json
 {
-  "title": "Updated Blog Post Title",
-  "content": "Updated content..."
+  "id": "entry1",
+  "collection_id": "col123",
+  "data": {
+    "title": "Blog Post Title",
+    "content": "Blog post content...",
+    "slug": "blog-post-title"
+  }
 }
 ```
 
@@ -490,10 +660,22 @@ Delete an entry.
 
 **Endpoint:** `DELETE /api/entries/:id`
 
+**Parameters:**
+
+- `id` (path) - The ID of the entry
+
 **Headers:**
 
-```
+```bash
 Authorization: Bearer <your-jwt-token>
+```
+
+**Response:**
+
+```json
+{
+  "message": "Entry deleted!"
+}
 ```
 
 ---
@@ -554,7 +736,7 @@ All endpoints may return the following error responses:
    # Register
    curl -X POST http://localhost:8080/api/auth/register \
      -H "Content-Type: application/json" \
-     -d '{"email": "user@example.com", "password": "password123"}'
+     -d '{"email": "user@example.com", "password": "password123", "username": "myuser"}'
 
    # Login
    curl -X POST http://localhost:8080/api/auth/login \
@@ -569,25 +751,25 @@ All endpoints may return the following error responses:
    curl -X POST http://localhost:8080/api/sites \
      -H "Authorization: Bearer YOUR_TOKEN" \
      -H "Content-Type: application/json" \
-     -d '{"name": "My Blog", "slug": "my-blog", "description": "Personal blog"}'
+     -d '{"name": "My Blog", "userId": "user123"}'
 
    # Create collection
-   curl -X POST http://localhost:8080/api/sites/1/collections \
+   curl -X POST http://localhost:8080/api/collections \
      -H "Authorization: Bearer YOUR_TOKEN" \
      -H "Content-Type: application/json" \
-     -d '{"name": "Posts", "slug": "posts", "description": "Blog posts"}'
+     -d '{"siteId": "site123", "name": "Posts", "fields": [{"name":"title","type":"string"},{"name":"content","type":"string"}]}'
 
    # Create entry
-   curl -X POST http://localhost:8080/api/collections/1/entries \
+   curl -X POST http://localhost:8080/api/entries \
      -H "Authorization: Bearer YOUR_TOKEN" \
      -H "Content-Type: application/json" \
-     -d '{"title": "Hello World", "content": "My first post!", "slug": "hello-world"}'
+     -d '{"collectionId": "col123", "data": {"title": {"value": "Hello World", "type": "string"}, "content": {"value": "My first post!", "type": "text"}}}'
    ```
 
 3. **Access Data Publicly**
    ```bash
    # Get all site data (no authentication needed)
-   curl -X GET http://localhost:8080/my-blog/data
+   curl -X GET http://localhost:8080/api/my-blog/data
    ```
 
 This workflow demonstrates the core concept: use the authenticated API to manage content, then access it publicly via the site slug for your frontend applications.

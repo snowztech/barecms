@@ -12,6 +12,7 @@ const CollectionDetailsPage: React.FC = () => {
     id,
     siteId
   );
+
   const { isDeleting, handleDelete } = useDelete(
     `/collections/${id || ""}`,
     `/sites/${siteId || ""}`
@@ -127,7 +128,7 @@ const CollectionDetailsPage: React.FC = () => {
       </div>
 
       {/* Fields Section */}
-      {collection.fields.length > 0 && (
+      {collection.fields && collection.fields.length > 0 && (
         <div className="mb-8">
           <h2 className="text-display text-xl font-semibold text-base-content mb-4">
             Fields
