@@ -36,10 +36,10 @@ func (h *Handler) GetCollection(c *gin.Context) {
 	c.JSON(http.StatusOK, collection)
 }
 
-func (h *Handler) GetSiteCollections(c *gin.Context) {
-	id := c.Param("id")
+func (h *Handler) GetCollectionsBySiteID(c *gin.Context) {
+	siteID := c.Param("id")
 
-	collections, err := h.Service.GetCollectionsBySiteID(id)
+	collections, err := h.Service.GetCollectionsBySiteID(siteID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

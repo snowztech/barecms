@@ -34,7 +34,7 @@ func Setup(service *services.Service, config configs.AppConfig) *gin.Engine {
 	h := handlers.NewHandler(service, config)
 	api := router.Group("/api")
 	{
-		api.GET("/status", h.Status)
+		api.GET("/health", h.Health)
 
 		// Public site data endpoint
 		api.GET("/:siteSlug/data", h.GetSiteData)
@@ -44,33 +44,30 @@ func Setup(service *services.Service, config configs.AppConfig) *gin.Engine {
 		{
 			auth.POST("/register", h.Register)
 			auth.POST("/login", h.Login)
-
-			// Protected auth routes
-			authProtected := auth.Group("/")
-			authProtected.Use(middlewares.AuthMiddleware(config))
-			{
-				authProtected.GET("/user", h.GetUser)
-				authProtected.DELETE("/user/:userId", h.DeleteUser)
-			}
+			auth.POST("/logout", h.Logout)
 		}
 
 		// Protected routes
 		protected := api.Group("/")
 		protected.Use(middlewares.AuthMiddleware(config))
 		{
+			// User Management
+			protected.GET("/user", h.GetUser)
+			protected.DELETE("/user/:userId", h.DeleteUser)
+
 			// Sites routes
 			protected.GET("/sites", h.GetSites)
 			protected.GET("/sites/:id", h.GetSite)
-			protected.GET("/sites/:id/with-collections", h.GetSiteWithCollections)
+			protected.GET("/sites/:id/collections", h.GetSiteWithCollections)
 			protected.POST("/sites", h.CreateSite)
 			protected.DELETE("/sites/:id", h.DeleteSite)
-			protected.GET("/sites/:id/collections", h.GetSiteCollections)
 
 			// Collections routes
 			protected.POST("/collections", h.CreateCollection)
 			protected.GET("/collections/:id", h.GetCollection)
-			protected.DELETE("/collections/:id", h.DeleteCollection)
 			protected.GET("/collections/:id/entries", h.GetCollectionEntries)
+			protected.GET("/collections/site/:id", h.GetCollectionsBySiteID)
+			protected.DELETE("/collections/:id", h.DeleteCollection)
 
 			// Entries routes
 			protected.POST("/entries", h.CreateEntry)

@@ -51,6 +51,9 @@ const EntryCard: React.FC<EntryCardProps> = ({
             {type === "string" && (
               <p className="text-sm text-base-content break-words">{value}</p>
             )}
+            {type === "text" && (
+              <p className="text-sm text-base-content break-words">{value}</p>
+            )}
             {type === "image" && (
               <img
                 src={value}

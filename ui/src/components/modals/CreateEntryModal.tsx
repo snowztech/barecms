@@ -33,7 +33,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
   }, [fields]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormState((prevState) => ({ ...prevState, [name]: value }));
@@ -43,7 +43,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
     console.log("fields", fields);
 
     const hasEmptyFields = fields.some(
-      (field) => formState[field.name].trim() === "",
+      (field) => formState[field.name].trim() === ""
     );
 
     console.log("hasEmptyFields", hasEmptyFields);
@@ -64,7 +64,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
           };
           return acc;
         },
-        {} as Record<string, { value: any; type: string }>,
+        {} as Record<string, { value: any; type: string }>
       );
 
       await request({

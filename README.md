@@ -235,41 +235,83 @@ docker run -d --name barecms-app \
 
 ### 🌐 Public Data Access
 
-**`GET /:siteSlug/data`** - Get all site data publicly (no authentication required)
+Retrieve all site content publicly without authentication. This is the primary endpoint for headless usage.
 
-**Example:** `GET /my-blog/data`
+**Endpoint:** `GET /api/:siteSlug/data`
 
-**Response:**
+**Description:** Returns all collections and entries for a site using its slug. BareCMS keeps it simple by organizing all content under a `data` field, where each collection is accessible by its slug containing an array of entries with their field values directly accessible.
+
+**Parameters:**
+
+- `siteSlug` (path) - The unique slug of the site
+
+**Example Request:**
+
+```bash
+curl -X GET http://localhost:8080/api/myblog/data
+```
+
+**Example Response:**
 
 ```json
 {
-  "site": {
-    "id": 1,
-    "name": "My Blog",
-    "slug": "my-blog",
-    "description": "A simple blog site"
-  },
-  "collections": [
-    {
-      "id": 1,
-      "name": "Posts",
-      "slug": "posts",
-      "description": "Blog posts collection",
-      "entries": [
-        {
-          "id": 1,
-          "title": "Welcome to BareCMS",
-          "content": "This is my first blog post...",
-          "slug": "welcome-to-barecms",
-          "created_at": "2024-01-15T10:30:00Z"
-        }
-      ]
-    }
-  ]
+  "id": "44394f36-daa3-451c-970f-59238c46ce36",
+  "name": "myblog",
+  "slug": "myblog",
+  "data": {
+    "articles": [
+      {
+        "content": "this is my article post content",
+        "draft": "false",
+        "published": "2025-07-21",
+        "title": "my sample article"
+      }
+    ],
+    "products": [
+      {
+        "name": "Sample Product",
+        "price": "29.99",
+        "description": "A great product for everyone"
+      }
+    ]
+  }
 }
 ```
 
-_This is the core of headless usage: manage content through the admin interface, then access all site data publicly via this single endpoint._
+**Response Structure:**
+
+- `id` - The unique identifier of the site
+- `name` - The name of the site
+- `slug` - The URL-friendly slug of the site
+- `data` - Object containing all collections, where:
+  - Each key is a collection slug (e.g., "articles", "products")
+  - Each value is an array of entries for that collection
+  - Entry objects contain field names as keys with their values directly accessible (no nested `data` object)
+
+This simple structure makes it easy to consume in frontend applications - you can directly access `response.data.articles` to get all articles, or `response.data.products` for products, etc.
+
+**Quick Usage Example**
+
+```javascript
+const barecmsHost = "http://localhost:8080";
+
+// Fetch all data for a site
+async function fetchSiteData(siteSlug) {
+  try {
+    const response = await fetch(`${barecmsHost}/api/${siteSlug}/data`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching site data:", error);
+  }
+}
+
+// Usage
+fetchSiteData("my-blog").then((data) => {
+  console.log(data.data.articles); // Access your articles
+  console.log(data.data.products); // Access your products
+});
+```
 
 ### 📚 Complete API Documentation
 
