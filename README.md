@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/logo.png" alt="BareCMS Logo" width="120" height="120">
+<img src="ui/public/logo.png" alt="BareCMS Logo" width="120" height="120">
 
 <h1>BareCMS</h1>
 
