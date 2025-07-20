@@ -1,3 +1,5 @@
+import { Field } from "./fields";
+
 export interface Site {
     id: string;
     name: string;
@@ -14,10 +16,7 @@ export interface Collection {
     entries: Entry[];
 }
 
-export interface Field {
-    name: string;
-    type: string;
-}
+
 
 export interface Entry {
     id: string;

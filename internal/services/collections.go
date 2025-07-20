@@ -6,10 +6,25 @@ import (
 	"barecms/internal/utils"
 	"encoding/json"
 
+	"github.com/pkg/errors"
 	"gorm.io/datatypes"
 )
 
 func (s *Service) CreateCollection(request models.CreateCollectionRequest) error {
+
+	// Validate field types
+	for _, field := range request.Fields {
+		if !models.IsValidFieldType(string(field.Type)) {
+			return errors.New("invalid field type: " + string(field.Type))
+		}
+	}
+
+	// Convert fields to JSON for storage
+	fieldsJSON, err := json.Marshal(request.Fields)
+	if err != nil {
+		return err
+	}
+
 	collection := models.Collection{
 		ID:     utils.GenerateUniqueID(),
 		Name:   request.Name,
@@ -17,7 +32,7 @@ func (s *Service) CreateCollection(request models.CreateCollectionRequest) error
 		SiteID: request.SiteID,
 		Fields: request.Fields,
 	}
-	collectionDB := mapToCollectionDB(collection)
+	collectionDB := mapToCollectionDB(collection, fieldsJSON)
 	if err := s.Storage.CreateCollection(collectionDB); err != nil {
 		return err
 	}
@@ -58,22 +73,25 @@ func (s *Service) DeleteCollection(collectionID string) error {
 	return nil
 }
 
-func mapToCollectionDB(collection models.Collection) storage.CollectionDB {
+func mapToCollectionDB(collection models.Collection, fieldsJSON []byte) storage.CollectionDB {
 	return storage.CollectionDB{
 		ID:     collection.ID,
 		Name:   collection.Name,
 		Slug:   collection.Slug,
 		SiteID: collection.SiteID,
-		Fields: datatypes.JSON(collection.Fields),
+		Fields: datatypes.JSON(fieldsJSON),
 	}
 }
 
 func mapToCollection(collectionDB storage.CollectionDB) models.Collection {
+	var fields []models.Field
+	json.Unmarshal(collectionDB.Fields, &fields)
+
 	return models.Collection{
 		ID:     collectionDB.ID,
 		Name:   collectionDB.Name,
 		Slug:   collectionDB.Slug,
 		SiteID: collectionDB.SiteID,
-		Fields: json.RawMessage(collectionDB.Fields),
+		Fields: fields,
 	}
 }
