@@ -1,48 +1,35 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-
-type Theme = "barecms" | "barecms-dark";
-
-interface ThemeContextType {
-  theme: Theme;
-  toggleTheme: () => void;
-}
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
-
-export const useTheme = () => {
-  const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error("useTheme must be used within a ThemeProvider");
-  }
-  return context;
-};
+import React, { useEffect, useState } from "react";
+import { ThemeContext } from "@/contexts/ThemeContext";
+import {
+  Theme,
+  DEFAULT_THEME,
+  applyTheme,
+  getStoredTheme,
+  setStoredTheme,
+  getNextTheme,
+} from "@/lib/theme";
 
 interface ThemeProviderProps {
   children: React.ReactNode;
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [theme, setTheme] = useState<Theme>("barecms");
+  const [theme, setTheme] = useState<Theme>(DEFAULT_THEME);
 
   useEffect(() => {
     // Get saved theme or default to light
-    const savedTheme = localStorage.getItem("theme") as Theme | null;
-    const initialTheme = savedTheme || "barecms";
+    const savedTheme = getStoredTheme();
+    const initialTheme = savedTheme || DEFAULT_THEME;
 
     setTheme(initialTheme);
     applyTheme(initialTheme);
   }, []);
 
-  const applyTheme = (newTheme: Theme) => {
-    document.documentElement.setAttribute("data-theme", newTheme);
-    document.body.setAttribute("data-theme", newTheme);
-  };
-
   const toggleTheme = () => {
-    const newTheme = theme === "barecms" ? "barecms-dark" : "barecms";
+    const newTheme = getNextTheme(theme);
     setTheme(newTheme);
     applyTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
+    setStoredTheme(newTheme);
   };
 
   const value = {
@@ -54,3 +41,5 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 };
+
+export default ThemeProvider;

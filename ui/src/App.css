@@ -14,6 +14,15 @@
   letter-spacing: -0.025em;
 }
 
+/* Theme Toggle Button Styling */
+.theme-toggle-btn {
+  @apply bg-transparent border border-bare-200 text-bare-600 hover:bg-bare-50 hover:border-bare-300 transition-all duration-200 flex items-center justify-center;
+}
+
+.theme-toggle-btn:active {
+  @apply bg-bare-100 border-bare-300 scale-95;
+}
+
 /* Custom Button Variants */
 .btn-bare {
   @apply bg-transparent border border-bare-300 text-bare-700 hover:bg-bare-50 hover:border-bare-400 transition-all duration-200 font-medium;
@@ -189,6 +198,31 @@ body[data-theme="barecms-dark"] .text-bare-500 {
 html[data-theme="barecms-dark"] .text-base-content,
 body[data-theme="barecms-dark"] .text-base-content {
   color: #f5f5f5;
+}
+
+/* Dark Mode Theme Toggle Button */
+[data-theme="barecms-dark"] .theme-toggle-btn,
+html[data-theme="barecms-dark"] .theme-toggle-btn,
+body[data-theme="barecms-dark"] .theme-toggle-btn {
+  @apply border-bare-700 hover:bg-bare-800 hover:border-bare-600;
+}
+
+[data-theme="barecms-dark"] .theme-toggle-btn:active,
+html[data-theme="barecms-dark"] .theme-toggle-btn:active,
+body[data-theme="barecms-dark"] .theme-toggle-btn:active {
+  @apply bg-bare-700 border-bare-600;
+}
+
+[data-theme="barecms-dark"] .theme-toggle-btn svg,
+html[data-theme="barecms-dark"] .theme-toggle-btn svg,
+body[data-theme="barecms-dark"] .theme-toggle-btn svg {
+  color: #d4d4d4;
+}
+
+[data-theme="barecms-dark"] .theme-toggle-btn:hover svg,
+html[data-theme="barecms-dark"] .theme-toggle-btn:hover svg,
+body[data-theme="barecms-dark"] .theme-toggle-btn:hover svg {
+  color: #e5e5e5;
 }
 
 /* Dark mode loading animations */

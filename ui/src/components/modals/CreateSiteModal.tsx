@@ -55,7 +55,7 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
   return (
     <dialog className="modal" ref={dialogRef}>
       <div className="modal-box">
-        <h3 className="font-bold text-lg">Create new site</h3>
+        <h3 className="font-bold text-lg mb-2">Create new site</h3>
         <input
           type="text"
           placeholder="Enter site name"

@@ -24,7 +24,7 @@ const Header = () => {
               <div
                 tabIndex={0}
                 role="button"
-                className="font-medium text-base-content hover:text-primary transition-colors cursor-pointer focus-bare"
+                className="font-medium text-base-content hover:text-primary transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2"
               >
                 Hello, {user.username}
               </div>

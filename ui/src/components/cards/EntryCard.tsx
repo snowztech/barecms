@@ -55,7 +55,7 @@ const EntryCard: React.FC<EntryCardProps> = ({
               <img
                 src={value}
                 alt={value}
-                className="w-full h-24 object-cover rounded border border-bare-200"
+                className="w-full h-24 object-contain rounded border border-bare-200"
               />
             )}
             {type === "date" && (
@@ -70,7 +70,7 @@ const EntryCard: React.FC<EntryCardProps> = ({
               <span
                 className={`badge-bare ${value ? "text-success bg-success/10" : "text-error bg-error/10"}`}
               >
-                {value ? "True" : "False"}
+                {value ? "Yes" : "No"}
               </span>
             )}
             {type === "url" && (

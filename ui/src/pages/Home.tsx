@@ -99,7 +99,7 @@ const HomePage: React.FC = () => {
                 </p>
                 <div className="flex justify-end">
                   <a
-                    className="text-sm font-medium text-primary hover:text-primary-focus transition-colors inline-flex items-center gap-1"
+                    className="text-sm font-medium cursor-pointer text-primary hover:text-primary-focus transition-colors inline-flex items-center gap-1"
                     href={`/sites/${site.id}`}
                   >
                     Configure →
