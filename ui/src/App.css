@@ -55,9 +55,37 @@
   white-space: pre-wrap;
 }
 
-/* Loading Animation */
+/* Enhanced Loading Animations */
 .loading-bare {
-  @apply w-6 h-6 border-2 border-bare-300 border-t-primary rounded-full animate-spin;
+  border: 2px solid transparent;
+  border-top: 2px solid #6b7770;
+  border-radius: 50%;
+  animation: loading-spin 1s linear infinite;
+}
+
+.loading-pulse {
+  @apply bg-primary rounded-full;
+  animation: loading-pulse-animation 1.5s ease-in-out infinite;
+}
+
+.loading-dot {
+  @apply bg-primary rounded-full;
+}
+
+@keyframes loading-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes loading-pulse-animation {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Custom Breadcrumbs */
@@ -114,35 +142,158 @@
   @apply py-12 lg:py-16;
 }
 
-/* Dark mode adjustments - using both html and body selectors for compatibility */
+/* Enhanced Dark Mode Typography and Components */
+[data-theme="barecms-dark"] .text-display,
+html[data-theme="barecms-dark"] .text-display,
+body[data-theme="barecms-dark"] .text-display {
+  color: #f5f5f5;
+  font-weight: 700;
+}
+
+[data-theme="barecms-dark"] h1,
+[data-theme="barecms-dark"] h2,
+[data-theme="barecms-dark"] h3,
+[data-theme="barecms-dark"] h4,
+[data-theme="barecms-dark"] h5,
+[data-theme="barecms-dark"] h6,
+html[data-theme="barecms-dark"] h1,
+html[data-theme="barecms-dark"] h2,
+html[data-theme="barecms-dark"] h3,
+html[data-theme="barecms-dark"] h4,
+html[data-theme="barecms-dark"] h5,
+html[data-theme="barecms-dark"] h6,
+body[data-theme="barecms-dark"] h1,
+body[data-theme="barecms-dark"] h2,
+body[data-theme="barecms-dark"] h3,
+body[data-theme="barecms-dark"] h4,
+body[data-theme="barecms-dark"] h5,
+body[data-theme="barecms-dark"] h6 {
+  color: #f5f5f5;
+  font-weight: 600;
+}
+
+/* Dark mode text colors with improved contrast */
+[data-theme="barecms-dark"] .text-bare-600,
+html[data-theme="barecms-dark"] .text-bare-600,
+body[data-theme="barecms-dark"] .text-bare-600 {
+  color: #d4d4d4;
+}
+
+[data-theme="barecms-dark"] .text-bare-500,
+html[data-theme="barecms-dark"] .text-bare-500,
+body[data-theme="barecms-dark"] .text-bare-500 {
+  color: #e5e5e5;
+}
+
+[data-theme="barecms-dark"] .text-base-content,
+html[data-theme="barecms-dark"] .text-base-content,
+body[data-theme="barecms-dark"] .text-base-content {
+  color: #f5f5f5;
+}
+
+/* Dark mode loading animations */
+[data-theme="barecms-dark"] .loading-bare,
+html[data-theme="barecms-dark"] .loading-bare,
+body[data-theme="barecms-dark"] .loading-bare {
+  border-top-color: #a8b8ab;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+}
+
+[data-theme="barecms-dark"] .loading-pulse,
+html[data-theme="barecms-dark"] .loading-pulse,
+body[data-theme="barecms-dark"] .loading-pulse {
+  background-color: #a8b8ab;
+}
+
+[data-theme="barecms-dark"] .loading-dot,
+html[data-theme="barecms-dark"] .loading-dot,
+body[data-theme="barecms-dark"] .loading-dot {
+  background-color: #a8b8ab;
+}
+
+/* Dark mode button improvements */
 [data-theme="barecms-dark"] .btn-bare,
 html[data-theme="barecms-dark"] .btn-bare,
 body[data-theme="barecms-dark"] .btn-bare {
-  @apply bg-transparent border-bare-600 text-bare-300 hover:bg-bare-800 hover:border-bare-500;
+  @apply bg-transparent border-bare-600 text-bare-200 hover:bg-bare-800 hover:border-bare-500 hover:text-bare-100;
 }
 
+/* Dark mode card improvements */
 [data-theme="barecms-dark"] .card-bare,
 html[data-theme="barecms-dark"] .card-bare,
 body[data-theme="barecms-dark"] .card-bare {
-  @apply border-bare-700;
+  @apply border-bare-700 shadow-bare-dark;
 }
 
+[data-theme="barecms-dark"] .card-bare:hover,
+html[data-theme="barecms-dark"] .card-bare:hover,
+body[data-theme="barecms-dark"] .card-bare:hover {
+  @apply shadow-bare-lg-dark;
+}
+
+/* Dark mode input improvements */
 [data-theme="barecms-dark"] .input-bare,
 html[data-theme="barecms-dark"] .input-bare,
 body[data-theme="barecms-dark"] .input-bare {
-  @apply border-bare-700 bg-base-100;
+  @apply border-bare-700 bg-base-100 text-base-content;
 }
 
+/* Dark mode JSON display */
 [data-theme="barecms-dark"] .pretty-json,
 html[data-theme="barecms-dark"] .pretty-json,
 body[data-theme="barecms-dark"] .pretty-json {
-  @apply bg-base-200 border-bare-700;
+  @apply bg-base-200 border-bare-700 text-base-content;
 }
 
+/* Dark mode badge improvements */
 [data-theme="barecms-dark"] .badge-bare,
 html[data-theme="barecms-dark"] .badge-bare,
 body[data-theme="barecms-dark"] .badge-bare {
-  @apply bg-bare-800 text-bare-300 border-bare-700;
+  @apply bg-bare-800 text-bare-200 border-bare-700;
+}
+
+/* Dark mode dropdown improvements */
+[data-theme="barecms-dark"] .dropdown-bare .dropdown-content,
+html[data-theme="barecms-dark"] .dropdown-bare .dropdown-content,
+body[data-theme="barecms-dark"] .dropdown-bare .dropdown-content {
+  @apply border-bare-700 shadow-bare-lg-dark;
+}
+
+/* Dark mode alert improvements */
+[data-theme="barecms-dark"] .alert-bare,
+html[data-theme="barecms-dark"] .alert-bare,
+body[data-theme="barecms-dark"] .alert-bare {
+  @apply border-bare-700 bg-base-100 text-base-content;
+}
+
+/* Dark mode link improvements */
+[data-theme="barecms-dark"] a:not(.btn),
+html[data-theme="barecms-dark"] a:not(.btn),
+body[data-theme="barecms-dark"] a:not(.btn) {
+  color: #c9d6cc;
+}
+
+[data-theme="barecms-dark"] a:not(.btn):hover,
+html[data-theme="barecms-dark"] a:not(.btn):hover,
+body[data-theme="barecms-dark"] a:not(.btn):hover {
+  color: #e2ebe4;
+}
+
+/* Dark mode border improvements */
+[data-theme="barecms-dark"] .border-bare-200,
+html[data-theme="barecms-dark"] .border-bare-200,
+body[data-theme="barecms-dark"] .border-bare-200 {
+  border-color: #404040;
+}
+
+/* Dark mode text selection */
+[data-theme="barecms-dark"] ::selection,
+html[data-theme="barecms-dark"] ::selection,
+body[data-theme="barecms-dark"] ::selection {
+  background-color: #a8b8ab;
+  color: #0a0a0a;
 }
 
 /* Additional utility classes for better spacing and layout */
@@ -168,4 +319,62 @@ body[data-theme="barecms-dark"] .badge-bare {
   --tw-space-y-reverse: 0;
   margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
+}
+
+/* Dark mode typography scale improvements */
+[data-theme="barecms-dark"] .text-3xl,
+html[data-theme="barecms-dark"] .text-3xl,
+body[data-theme="barecms-dark"] .text-3xl {
+  color: #f5f5f5;
+  font-weight: 700;
+}
+
+[data-theme="barecms-dark"] .text-2xl,
+html[data-theme="barecms-dark"] .text-2xl,
+body[data-theme="barecms-dark"] .text-2xl {
+  color: #f5f5f5;
+  font-weight: 600;
+}
+
+[data-theme="barecms-dark"] .text-xl,
+html[data-theme="barecms-dark"] .text-xl,
+body[data-theme="barecms-dark"] .text-xl {
+  color: #f5f5f5;
+  font-weight: 600;
+}
+
+[data-theme="barecms-dark"] .text-lg,
+html[data-theme="barecms-dark"] .text-lg,
+body[data-theme="barecms-dark"] .text-lg {
+  color: #f5f5f5;
+  font-weight: 500;
+}
+
+[data-theme="barecms-dark"] .text-sm,
+html[data-theme="barecms-dark"] .text-sm,
+body[data-theme="barecms-dark"] .text-sm {
+  color: #d4d4d4;
+}
+
+[data-theme="barecms-dark"] .text-xs,
+html[data-theme="barecms-dark"] .text-xs,
+body[data-theme="barecms-dark"] .text-xs {
+  color: #d4d4d4;
+}
+
+/* Loading state improvements for better accessibility */
+.loading-bare,
+.loading-pulse,
+.loading-dot {
+  opacity: 0.8;
+}
+
+/* Smooth loading transitions */
+.loading-bare {
+  transition: border-color 0.2s ease;
+}
+
+.loading-pulse,
+.loading-dot {
+  transition: background-color 0.2s ease;
 }

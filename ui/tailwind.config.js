@@ -49,6 +49,8 @@ export default {
       boxShadow: {
         'bare': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
         'bare-lg': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        'bare-dark': '0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.3)',
+        'bare-lg-dark': '0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3)',
       }
     },
   },
@@ -102,25 +104,25 @@ export default {
         },
         "barecms-dark": {
           "primary": "#a8b8ab",
-          "primary-focus": "#859289",
+          "primary-focus": "#c9d6cc",
           "primary-content": "#0a0a0a",
 
-          "secondary": "#a3a3a3",
-          "secondary-focus": "#737373",
+          "secondary": "#d4d4d4",
+          "secondary-focus": "#e5e5e5",
           "secondary-content": "#0a0a0a",
 
           "accent": "#c9d6cc",
-          "accent-focus": "#a8b8ab",
+          "accent-focus": "#e2ebe4",
           "accent-content": "#0a0a0a",
 
-          "neutral": "#d4d4d4",
-          "neutral-focus": "#a3a3a3",
+          "neutral": "#e5e5e5",
+          "neutral-focus": "#f5f5f5",
           "neutral-content": "#0a0a0a",
 
           "base-100": "#0a0a0a",
           "base-200": "#171717",
           "base-300": "#262626",
-          "base-content": "#fafafa",
+          "base-content": "#f5f5f5",
 
           "info": "#a8b8ab",
           "info-content": "#0a0a0a",

@@ -13,6 +13,16 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Enhanced dark mode font rendering */
+[data-theme="barecms-dark"],
+html[data-theme="barecms-dark"],
+body[data-theme="barecms-dark"] {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-weight: 400;
+}
+
 /* Smooth transitions for theme switching */
 * {
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
@@ -51,8 +61,21 @@
   color: theme('colors.primary-content');
 }
 
+[data-theme="barecms-dark"] ::selection {
+  background-color: #a8b8ab;
+  color: #0a0a0a;
+}
+
 /* Focus visible for accessibility */
 .focus-visible:focus-visible {
   outline: 2px solid theme('colors.primary');
   outline-offset: 2px;
+}
+
+/* Dark mode base improvements */
+[data-theme="barecms-dark"] body,
+html[data-theme="barecms-dark"] body,
+body[data-theme="barecms-dark"] {
+  background-color: #0a0a0a;
+  color: #f5f5f5;
 }
