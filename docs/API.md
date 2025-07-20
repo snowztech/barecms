@@ -423,6 +423,18 @@ Authorization: Bearer <your-jwt-token>
 }
 ```
 
+**Supported Field Types:**
+
+| Type      | Description       | Input           |
+| --------- | ----------------- | --------------- |
+| `string`  | Single line text  | Text input      |
+| `text`    | Multi-line text   | Textarea        |
+| `number`  | Numeric values    | Number input    |
+| `boolean` | True/false values | Select (Yes/No) |
+| `date`    | Date picker       | Date input      |
+| `image`   | Image URL         | URL input       |
+| `url`     | Website links     | URL input       |
+
 **Response:**
 
 ```json
@@ -594,7 +606,7 @@ Authorization: Bearer <your-jwt-token>
     },
     "content": {
       "value": "Content of the blog post...",
-      "type": "text"
+      "type": "string"
     },
     "published": {
       "value": "true",
@@ -745,7 +757,7 @@ All endpoints may return the following error responses:
    curl -X POST http://localhost:8080/api/collections \
      -H "Authorization: Bearer YOUR_TOKEN" \
      -H "Content-Type: application/json" \
-     -d '{"siteId": "site123", "name": "Posts", "fields": [{"name":"title","type":"string"},{"name":"content","type":"text"}]}'
+     -d '{"siteId": "site123", "name": "Posts", "fields": [{"name":"title","type":"string"},{"name":"content","type":"string"}]}'
 
    # Create entry
    curl -X POST http://localhost:8080/api/entries \
