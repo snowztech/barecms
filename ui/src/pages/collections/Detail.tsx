@@ -10,12 +10,12 @@ const CollectionDetailsPage: React.FC = () => {
   const { id, siteId } = useParams<{ id: string; siteId: string }>();
   const { collection, entries, site, loading, error } = useCollectionDetail(
     id,
-    siteId
+    siteId,
   );
 
   const { isDeleting, handleDelete } = useDelete(
     `/collections/${id || ""}`,
-    `/sites/${siteId || ""}`
+    `/sites/${siteId || ""}`,
   );
 
   const entryModalRef = useRef<HTMLDialogElement>(null);
