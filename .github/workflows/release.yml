@@ -155,9 +155,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.RELEASE_VERSION }}
           name: Release ${{ env.RELEASE_VERSION }}
-          # Use the generate_release_notes input from workflow_dispatch if available, otherwise default to true
-          generateReleaseNotes: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.generate_notes || github.event_name == 'push' }}
-          # Use the prerelease input from workflow_dispatch if available, otherwise infer from tag name
-          prerelease: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.prerelease || contains(env.RELEASE_VERSION, '-beta') }}
-          # Upload all packaged binaries as release assets
+          generateReleaseNotes: true
+          prerelease: ${{ contains(env.RELEASE_VERSION, '-beta') }}
           artifacts: "./release_artifacts/*"
