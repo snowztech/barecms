@@ -50,10 +50,6 @@
 
 ![BareCMS Demo](assets/demo.gif)
 
-_See BareCMS in action - create sites, manage collections, and publish content with ease._
-
----
-
 ## ✨ Features
 
 - **🎯 Minimalist Design**: Clean, intuitive interface focused on content management
