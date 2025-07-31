@@ -7,11 +7,11 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
 type App struct {
-	router *gin.Engine
+	router *echo.Echo
 	cfg    configs.AppConfig
 }
 
@@ -32,7 +32,7 @@ func (app *App) setup() {
 
 func (app *App) Run() {
 	fmt.Printf("BareCMS running on http://localhost:%d\n", app.cfg.Port)
-	if err := app.router.Run(fmt.Sprintf(":%d", app.cfg.Port)); err != nil {
+	if err := app.router.Start(fmt.Sprintf(":%d", app.cfg.Port)); err != nil {
 		panic(fmt.Sprintf("Failed to run server: %v", err))
 	}
 }

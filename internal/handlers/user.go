@@ -3,44 +3,39 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
-func (h *Handler) GetUser(c *gin.Context) {
-	userID, exists := c.Get("user_id")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
-		return
+func (h *Handler) GetUser(c echo.Context) error {
+	userID := c.Get("user_id")
+	if userID == nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "User not authenticated")
 	}
 
 	user, err := h.Service.GetUser(userID.(string))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-		return
+		return echo.NewHTTPError(http.StatusNotFound, "User not found")
 	}
 
-	c.JSON(http.StatusOK, user)
+	return c.JSON(http.StatusOK, user)
 }
 
-func (h *Handler) DeleteUser(c *gin.Context) {
+func (h *Handler) DeleteUser(c echo.Context) error {
 	userID := c.Param("userId")
-	currentUserID, exists := c.Get("user_id")
+	currentUserID := c.Get("user_id")
 
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
-		return
+	if currentUserID == nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "User not authenticated")
 	}
 
 	// Users can only delete their own account
 	if userID != currentUserID.(string) {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Cannot delete other users"})
-		return
+		return echo.NewHTTPError(http.StatusForbidden, "Cannot delete other users")
 	}
 
 	if err := h.Service.DeleteUser(userID); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
+	return c.JSON(http.StatusOK, map[string]string{"message": "User deleted successfully"})
 }

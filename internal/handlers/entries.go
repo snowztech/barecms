@@ -4,56 +4,51 @@ import (
 	"barecms/internal/models"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
-func (h *Handler) CreateEntry(c *gin.Context) {
+func (h *Handler) CreateEntry(c echo.Context) error {
 	var request models.CreateEntryRequest
-	if err := c.BindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	if err := c.Bind(&request); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	if err := h.Service.CreateEntry(&request); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Entry created!"})
+	return c.JSON(http.StatusCreated, map[string]string{"message": "Entry created!"})
 }
 
-func (h *Handler) GetEntry(c *gin.Context) {
+func (h *Handler) GetEntry(c echo.Context) error {
 	id := c.Param("id")
 
 	entry, err := h.Service.GetEntryByID(id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	c.JSON(http.StatusOK, entry)
+	return c.JSON(http.StatusOK, entry)
 }
 
-func (h *Handler) GetCollectionEntries(c *gin.Context) {
+func (h *Handler) GetCollectionEntries(c echo.Context) error {
 	id := c.Param("id")
 
 	entries, err := h.Service.GetEntriesByCollectionID(id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	c.JSON(http.StatusOK, entries)
+	return c.JSON(http.StatusOK, entries)
 }
 
-func (h *Handler) DeleteEntry(c *gin.Context) {
+func (h *Handler) DeleteEntry(c echo.Context) error {
 	id := c.Param("id")
 
 	err := h.Service.DeleteEntry(id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Entry deleted!"})
+	return c.JSON(http.StatusOK, map[string]string{"message": "Entry deleted!"})
 }
