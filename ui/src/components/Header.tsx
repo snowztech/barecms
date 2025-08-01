@@ -1,11 +1,9 @@
-import { useAuth } from "@/hooks/useAuth";
-import { useUser } from "@/hooks/useUser";
+import { useAuth } from "@/contexts/AuthContext";
 import ThemeToggle from "./ThemeToggle";
 import { Link } from "react-router-dom";
 
 const Header = () => {
-  const { logout } = useAuth();
-  const { user } = useUser();
+  const { user, logout } = useAuth();
 
   return (
     <header className="border-b border-bare-200">

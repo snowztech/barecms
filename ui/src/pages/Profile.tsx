@@ -1,10 +1,10 @@
 import React from "react";
 import Loader from "@/components/Loader";
-import { useUser } from "@/hooks/useUser";
+import { useAuth } from "@/contexts/AuthContext";
 import useDeleteUser from "@/hooks/useDeleteUser";
 
 const Profile: React.FC = () => {
-  const { user, loading, error } = useUser();
+  const { user, loading, error } = useAuth();
   const {
     isDeleting,
     error: deleteError,

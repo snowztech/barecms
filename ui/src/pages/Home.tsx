@@ -1,11 +1,11 @@
 import React, { useRef } from "react";
 import CreateSiteModal from "@/components/modals/CreateSiteModal";
-import { useUser } from "@/hooks/useUser";
+import { useAuth } from "@/contexts/AuthContext";
 import { useSites } from "@/hooks/useSites";
 import Loader from "@/components/Loader";
 
 const HomePage: React.FC = () => {
-  const { user, loading: userLoading } = useUser();
+  const { user, loading: userLoading } = useAuth();
   const { sites, loading: sitesLoading, error } = useSites();
   const modalRef = useRef<HTMLDialogElement>(null);
 

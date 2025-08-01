@@ -1,6 +1,8 @@
-import { useState } from "react";
+import React, { useEffect, useState, ReactNode } from "react";
 import axios from "axios";
+import apiClient from "@/lib/api";
 import { AUTH_TOKEN_KEY, User } from "@/types/auth";
+import { AuthContext, AuthContextType } from "@/contexts/AuthContext";
 
 interface AuthResponse {
   token?: string;
@@ -8,9 +10,33 @@ interface AuthResponse {
   user?: User;
 }
 
-export const useAuth = () => {
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const fetchUser = async () => {
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
+    if (!token) {
+      setUser(null);
+      return;
+    }
+
+    try {
+      const response = await apiClient.get("/user");
+      setUser(response.data.user);
+    } catch (err: any) {
+      console.error("Failed to fetch user:", err);
+      if (err.response?.status === 401) {
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        setUser(null);
+      }
+    }
+  };
 
   const login = async (
     email: string,
@@ -22,17 +48,15 @@ export const useAuth = () => {
       const response = await axios.post("/api/auth/login", { email, password });
       const { token, user } = response.data;
       localStorage.setItem(AUTH_TOKEN_KEY, token);
+      setUser(user);
       setLoading(false);
       return { token, user };
     } catch (error: any) {
       setLoading(false);
-      setError(
-        error.response?.data?.error || "An error occurred. Please try again.",
-      );
-      return {
-        error:
-          error.response?.data?.error || "An error occurred. Please try again.",
-      };
+      const errorMessage =
+        error.response?.data?.error || "An error occurred. Please try again.";
+      setError(errorMessage);
+      return { error: errorMessage };
     }
   };
 
@@ -49,29 +73,25 @@ export const useAuth = () => {
         username,
         password,
       });
-      setLoading(false);
-
       const { token, user } = response.data;
       if (token) {
         localStorage.setItem(AUTH_TOKEN_KEY, token);
-        return { token, user };
+        setUser(user);
       }
-
-      return { user };
+      setLoading(false);
+      return { token, user };
     } catch (err: any) {
       setLoading(false);
-      setError(
-        err.response?.data?.error || "An error occurred. Please try again.",
-      );
-      return {
-        error:
-          err.response?.data?.error || "An error occurred. Please try again.",
-      };
+      const errorMessage =
+        err.response?.data?.error || "An error occurred. Please try again.";
+      setError(errorMessage);
+      return { error: errorMessage };
     }
   };
 
   const logout = () => {
     localStorage.removeItem(AUTH_TOKEN_KEY);
+    setUser(null);
     window.location.href = "/login";
   };
 
@@ -80,12 +100,24 @@ export const useAuth = () => {
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
-  return {
+  const refetchUser = async () => {
+    await fetchUser();
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  const value: AuthContextType = {
+    user,
     loading,
     error,
     login,
     register,
     logout,
     getAuthHeaders,
+    refetchUser,
   };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
