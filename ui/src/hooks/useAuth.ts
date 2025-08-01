@@ -1,10 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
+import { AUTH_TOKEN_KEY, User } from "@/types/auth";
 
 interface AuthResponse {
   token?: string;
   error?: string;
-  user?: any;
+  user?: User;
 }
 
 export const useAuth = () => {
@@ -20,7 +21,7 @@ export const useAuth = () => {
     try {
       const response = await axios.post("/api/auth/login", { email, password });
       const { token, user } = response.data;
-      localStorage.setItem("token", token);
+      localStorage.setItem(AUTH_TOKEN_KEY, token);
       setLoading(false);
       return { token, user };
     } catch (error: any) {
@@ -52,7 +53,7 @@ export const useAuth = () => {
 
       const { token, user } = response.data;
       if (token) {
-        localStorage.setItem("token", token);
+        localStorage.setItem(AUTH_TOKEN_KEY, token);
         return { token, user };
       }
 
@@ -70,12 +71,12 @@ export const useAuth = () => {
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem(AUTH_TOKEN_KEY);
     window.location.href = "/login";
   };
 
   const getAuthHeaders = () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
 

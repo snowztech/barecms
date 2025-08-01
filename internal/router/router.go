@@ -36,13 +36,11 @@ func Setup(service *services.Service, config configs.AppConfig) *echo.Echo {
 	api.GET("/:siteSlug/data", h.GetSiteData)
 
 	// Auth routes (public)
-	auth := api.Group("/auth")
-	auth.POST("/register", h.Register)
-	auth.POST("/login", h.Login)
-	auth.POST("/logout", h.Logout)
+	api.POST("/auth/register", h.Register)
+	api.POST("/auth/login", h.Login)
 
 	// Protected routes
-	protected := api.Group("/")
+	protected := api.Group("")
 	protected.Use(middlewares.AuthMiddleware(config))
 
 	// User Management

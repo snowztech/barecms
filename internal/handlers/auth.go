@@ -15,6 +15,8 @@ func (h *Handler) Login(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
+	slog.Debug("Attempting to login user", "email", request.Email)
+
 	user, err := h.Service.Login(request.Email, request.Password)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid credentials")
@@ -26,6 +28,8 @@ func (h *Handler) Login(c echo.Context) error {
 		slog.Error("Failed to generate JWT token", "error", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate token")
 	}
+
+	slog.Info("User logged in successfully", "user", user)
 
 	return c.JSON(http.StatusOK, map[string]any{
 		"token": token,
@@ -77,20 +81,5 @@ func (h *Handler) Register(c echo.Context) error {
 		"token":   token,
 		"user":    user,
 		"message": "User created successfully",
-	})
-}
-
-func (h *Handler) Logout(c echo.Context) error {
-	userID := c.Get("user_id")
-	if userID == nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, "User not authenticated")
-	}
-
-	if err := h.Service.Logout(userID.(string)); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	}
-
-	return c.JSON(http.StatusOK, map[string]string{
-		"message": "User logged out successfully",
 	})
 }

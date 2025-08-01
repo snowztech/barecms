@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log/slog"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -17,7 +18,9 @@ func (h *Handler) GetUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, "User not found")
 	}
 
-	return c.JSON(http.StatusOK, user)
+	slog.Info("User retrieved successfully", "user", user)
+
+	return c.JSON(http.StatusOK, map[string]interface{}{"user": user})
 }
 
 func (h *Handler) DeleteUser(c echo.Context) error {

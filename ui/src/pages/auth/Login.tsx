@@ -13,9 +13,8 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const response = await login(email, password);
-    if (response.token) {
-      localStorage.setItem("token", response.token);
-      navigate("/");
+    if (response.token && response.user) {
+      navigate("/", { replace: true });
     }
   };
 

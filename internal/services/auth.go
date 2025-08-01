@@ -44,11 +44,3 @@ func (s *Service) Login(email, password string) (models.User, error) {
 
 	return user, nil
 }
-
-func (s *Service) Logout(userID string) error {
-	if err := s.Storage.RevokeToken(userID); err != nil {
-		return errors.Wrap(err, "failed to logout user")
-	}
-
-	return nil
-}
