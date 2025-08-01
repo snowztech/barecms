@@ -158,3 +158,5 @@ jobs:
           generateReleaseNotes: true
           prerelease: ${{ contains(env.RELEASE_VERSION, '-beta') }}
           artifacts: "./release_artifacts/*"
+          allowUpdates: true
+          updateOnlyUnreleased: false
