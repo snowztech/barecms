@@ -24,7 +24,7 @@ const EntryCard: React.FC<EntryCardProps> = ({
 }) => {
   const { isDeleting, error, handleDelete } = useDelete(
     `/entries/${entryId}`,
-    `/sites/${siteId}/collections/${collectionId}`
+    `/sites/${siteId}/collections/${collectionId}`,
   );
 
   if (isDeleting) {

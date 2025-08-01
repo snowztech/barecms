@@ -27,7 +27,7 @@
 
 ## 📋 Table of Contents
 
-- [🎬 Demo](#-demo)
+<!-- - [🎬 Demo](#-demo) -->
 - [✨ Features](#-features)
 - [🚀 Quick Start](#-quick-start)
   - [Prerequisites](#prerequisites)
@@ -46,9 +46,9 @@
 
 ---
 
-## 🎬 Demo
+<!-- ## 🎬 Demo
 
-![BareCMS Demo](assets/demo.gif)
+![BareCMS Demo](assets/demo.gif) -->
 
 ## ✨ Features
 
