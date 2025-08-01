@@ -1,24 +1,25 @@
 import React from "react";
 import Loader from "@/components/Loader";
+import ProfileSkeleton from "@/components/ProfileSkeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import useDeleteUser from "@/hooks/useDeleteUser";
 
 const Profile: React.FC = () => {
-  const { user, loading, error } = useAuth();
+  const { user, loading, initializing, error } = useAuth();
   const {
     isDeleting,
     error: deleteError,
     handleDelete,
   } = useDeleteUser(user?.id as string);
 
-  if (loading || isDeleting) {
-    return (
-      <div className="container-bare">
-        <div className="min-h-[400px] flex items-center justify-center">
-          <Loader size="lg" variant="minimal" />
-        </div>
-      </div>
-    );
+  // Show skeleton during initial app load
+  if (initializing) {
+    return <ProfileSkeleton />;
+  }
+
+  // Show inline loading for specific actions (like delete)
+  if (loading && !user) {
+    return <ProfileSkeleton />;
   }
 
   if (error) {
@@ -85,10 +86,17 @@ const Profile: React.FC = () => {
           )}
           <button
             onClick={handleDelete}
-            className="btn btn-outline border-error text-error hover:bg-error hover:text-error-content transition-all duration-200"
+            className="btn btn-outline border-error text-error hover:bg-error hover:text-error-content transition-all duration-200 disabled:opacity-50"
             disabled={isDeleting}
           >
-            {isDeleting ? "Deleting..." : "Delete Account"}
+            {isDeleting ? (
+              <div className="flex items-center gap-2">
+                <Loader size="sm" />
+                <span>Deleting...</span>
+              </div>
+            ) : (
+              "Delete Account"
+            )}
           </button>
         </div>
       </div>

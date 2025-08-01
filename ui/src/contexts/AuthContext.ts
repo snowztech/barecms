@@ -10,6 +10,7 @@ interface AuthResponse {
 export interface AuthContextType {
   user: User | null;
   loading: boolean;
+  initializing: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<AuthResponse>;
   register: (

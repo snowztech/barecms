@@ -17,12 +17,14 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
+  const [initializing, setInitializing] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchUser = async () => {
     const token = localStorage.getItem(AUTH_TOKEN_KEY);
     if (!token) {
       setUser(null);
+      setInitializing(false);
       return;
     }
 
@@ -35,6 +37,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         localStorage.removeItem(AUTH_TOKEN_KEY);
         setUser(null);
       }
+    } finally {
+      setInitializing(false);
     }
   };
 
@@ -111,6 +115,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value: AuthContextType = {
     user,
     loading,
+    initializing,
     error,
     login,
     register,
