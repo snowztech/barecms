@@ -4,78 +4,71 @@ import (
 	"barecms/internal/models"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
-func (h *Handler) GetSites(c *gin.Context) {
+func (h *Handler) GetSites(c echo.Context) error {
 	sites, err := h.Service.GetSites()
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	c.JSON(200, gin.H{"sites": sites})
+	return c.JSON(http.StatusOK, map[string][]models.Site{"sites": sites})
 }
 
-func (h *Handler) GetSite(c *gin.Context) {
+func (h *Handler) GetSite(c echo.Context) error {
 	id := c.Param("id")
 
 	site, err := h.Service.GetSite(id)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	c.JSON(200, gin.H{"site": site})
+	return c.JSON(http.StatusOK, map[string]models.Site{"site": site})
 }
 
-func (h *Handler) GetSiteWithCollections(c *gin.Context) {
+func (h *Handler) GetSiteWithCollections(c echo.Context) error {
 	id := c.Param("id")
 
 	siteWithCollections, err := h.Service.GetSiteWithCollections(id)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	c.JSON(200, siteWithCollections)
+	return c.JSON(http.StatusOK, siteWithCollections)
 }
 
-func (h *Handler) CreateSite(c *gin.Context) {
+func (h *Handler) CreateSite(c echo.Context) error {
 	var req models.CreateSiteRequest
 
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	err := h.Service.CreateSite(req)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	c.JSON(200, gin.H{"message": "Site created!"})
+	return c.JSON(http.StatusOK, map[string]string{"message": "Site created!"})
 }
 
-func (h *Handler) DeleteSite(c *gin.Context) {
+func (h *Handler) DeleteSite(c echo.Context) error {
 	id := c.Param("id")
 	err := h.Service.DeleteSite(id)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	c.JSON(200, gin.H{"message": "Site deleted!"})
+	return c.JSON(http.StatusOK, map[string]string{"message": "Site deleted!"})
 }
 
-func (h *Handler) GetSiteData(c *gin.Context) {
+func (h *Handler) GetSiteData(c echo.Context) error {
 	slug := c.Param("siteSlug")
 
 	siteData, err := h.Service.GetSiteData(slug)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	c.JSON(http.StatusOK, siteData)
+	return c.JSON(http.StatusOK, siteData)
 }

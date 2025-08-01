@@ -5,7 +5,7 @@ import (
 	"barecms/internal/services"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
 type Handler struct {
@@ -17,6 +17,6 @@ func NewHandler(service *services.Service, config configs.AppConfig) *Handler {
 	return &Handler{Service: service, Config: config}
 }
 
-func (h *Handler) Health(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"status": "up"})
+func (h *Handler) Health(c echo.Context) error {
+	return c.JSON(http.StatusOK, map[string]string{"status": "up"})
 }

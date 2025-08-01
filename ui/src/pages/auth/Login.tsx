@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/contexts/AuthContext";
 import { Eye, EyeOff, Loader } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -13,9 +13,8 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const response = await login(email, password);
-    if (response.token) {
-      localStorage.setItem("token", response.token);
-      navigate("/");
+    if (response.token && response.user) {
+      navigate("/", { replace: true });
     }
   };
 

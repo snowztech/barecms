@@ -16,19 +16,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "1.24.4"
-
-      - name: Go Mod Tidy
-        run: go mod tidy
-
-      - name: Go Lint
-        uses: golangci/golangci-lint-action@v7
-        with:
-          version: v2.1
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -43,6 +30,24 @@ jobs:
         run: |
           cd ui
           npm run lint
+
+      - name: UI Build
+        run: |
+          cd ui
+          npm run build
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24.4"
+
+      - name: Go Mod Tidy
+        run: go mod tidy
+
+      - name: Go Lint
+        uses: golangci/golangci-lint-action@v7
+        with:
+          version: v2.1
 
   build:
     name: build

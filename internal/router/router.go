@@ -5,76 +5,66 @@ import (
 	"barecms/internal/handlers"
 	"barecms/internal/middlewares"
 	"barecms/internal/services"
+	"barecms/ui"
 
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/contrib/static"
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
-func Setup(service *services.Service, config configs.AppConfig) *gin.Engine {
-	router := gin.New()
-	router.Use(gin.Logger())
-	router.Use(gin.Recovery())
+func Setup(service *services.Service, config configs.AppConfig) *echo.Echo {
+	r := echo.New()
 
 	if config.Env == "dev" {
-		router.Use(cors.New(cors.Config{
+		r.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 			AllowOrigins: []string{"http://localhost:5173", "http://localhost:5172"},
 			AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 			AllowHeaders: []string{"Origin", "Content-Type", "Authorization"},
 		}))
 	}
 
-	// Serve static files
-	router.Use(static.Serve("/", static.LocalFile("./ui/dist", true)))
-	// Fallback to index.html for client-side routing
-	router.NoRoute(func(c *gin.Context) {
-		c.File("./ui/dist/index.html")
-	})
+	// Serve the built frontend files
+	r.Use(middleware.StaticWithConfig(middleware.StaticConfig{
+		Filesystem: ui.BuildHTTPFS(),
+		HTML5:      true,
+	}))
 
 	h := handlers.NewHandler(service, config)
-	api := router.Group("/api")
-	{
-		api.GET("/health", h.Health)
+	api := r.Group("/api")
+	api.GET("/health", h.Health)
 
-		// Public site data endpoint
-		api.GET("/:siteSlug/data", h.GetSiteData)
+	// Public site data endpoint
+	api.GET("/:siteSlug/data", h.GetSiteData)
 
-		// Auth routes (public)
-		auth := api.Group("/auth")
-		{
-			auth.POST("/register", h.Register)
-			auth.POST("/login", h.Login)
-			auth.POST("/logout", h.Logout)
-		}
+	// Auth routes (public)
+	api.POST("/auth/register", h.Register)
+	api.POST("/auth/login", h.Login)
 
-		// Protected routes
-		protected := api.Group("/")
-		protected.Use(middlewares.AuthMiddleware(config))
-		{
-			// User Management
-			protected.GET("/user", h.GetUser)
-			protected.DELETE("/user/:userId", h.DeleteUser)
+	// Protected routes
+	protected := api.Group("")
+	protected.Use(middlewares.AuthMiddleware(config))
 
-			// Sites routes
-			protected.GET("/sites", h.GetSites)
-			protected.GET("/sites/:id", h.GetSite)
-			protected.GET("/sites/:id/collections", h.GetSiteWithCollections)
-			protected.POST("/sites", h.CreateSite)
-			protected.DELETE("/sites/:id", h.DeleteSite)
+	// User Management
+	protected.GET("/user", h.GetUser)
+	protected.DELETE("/user/:userId", h.DeleteUser)
 
-			// Collections routes
-			protected.POST("/collections", h.CreateCollection)
-			protected.GET("/collections/:id", h.GetCollection)
-			protected.GET("/collections/:id/entries", h.GetCollectionEntries)
-			protected.GET("/collections/site/:id", h.GetCollectionsBySiteID)
-			protected.DELETE("/collections/:id", h.DeleteCollection)
+	// Sites routes
+	protected.GET("/sites", h.GetSites)
+	protected.GET("/sites/:id", h.GetSite)
+	protected.GET("/sites/:id/collections", h.GetSiteWithCollections)
+	protected.POST("/sites", h.CreateSite)
+	protected.DELETE("/sites/:id", h.DeleteSite)
 
-			// Entries routes
-			protected.POST("/entries", h.CreateEntry)
-			protected.GET("/entries/:id", h.GetEntry)
-			protected.DELETE("/entries/:id", h.DeleteEntry)
-		}
-	}
+	// Collections routes
+	protected.POST("/collections", h.CreateCollection)
+	protected.GET("/collections/:id", h.GetCollection)
+	protected.GET("/collections/:id/entries", h.GetCollectionEntries)
+	protected.GET("/collections/site/:id", h.GetCollectionsBySiteID)
+	protected.DELETE("/collections/:id", h.DeleteCollection)
 
-	return router
+	// Entries routes
+	protected.POST("/entries", h.CreateEntry)
+	protected.GET("/entries/:id", h.GetEntry)
+	protected.DELETE("/entries/:id", h.DeleteEntry)
+
+	return r
 }
