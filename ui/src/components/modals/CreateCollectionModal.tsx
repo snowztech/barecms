@@ -15,6 +15,7 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
   const [fields, setFields] = useState<Field[]>([]);
   const [newFieldName, setNewFieldName] = useState("");
   const [newFieldType, setNewFieldType] = useState<FieldType>(FieldType.STRING);
+  const [newFieldOptional, setNewFieldOptional] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null);
   const [fieldsError, setFieldsError] = useState<string | null>(null);
   const { request, loading } = useApi();
@@ -29,6 +30,10 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
   const handleNewFieldNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewFieldName(e.target.value);
   };
+
+  const handleNewOptionalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewFieldOptional(e.target.checked)
+  }
 
   const addField = () => {
     if (newFieldName.trim() === "") {
@@ -48,6 +53,7 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
       {
         name: newFieldName.trim().toLowerCase(),
         type: newFieldType,
+        optional: newFieldOptional
       },
     ]);
     setNewFieldName("");
@@ -120,7 +126,7 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
           {fields.map((field, index) => (
             <div key={index} className="flex items-center mb-2">
               <p className="mr-2">
-                {field.name} ({field.type})
+                {field.name} ({field.type}{field.optional && ', optional'})
               </p>
               <button
                 className="btn btn-sm btn-error btn-outline"
@@ -153,6 +159,16 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
               Add Field
             </button>
           </div>
+          <label className="label justify-start gap-2">
+            <input
+              id="field-optional"
+              type="checkbox"
+              className="checkbox"
+              checked={newFieldOptional}
+              onChange={handleNewOptionalChange}
+            />
+            Optional
+          </label>
         </div>
         {fieldsError && <p className="text-red-500 mt-2">{fieldsError}</p>}
         <div className="modal-action">
