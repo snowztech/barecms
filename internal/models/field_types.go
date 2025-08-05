@@ -34,6 +34,7 @@ func IsValidFieldType(fieldType string) bool {
 }
 
 type Field struct {
-	Name string    `json:"name"`
-	Type FieldType `json:"type"`
+	Name     string    `json:"name"`
+	Type     FieldType `json:"type"`
+	Optional bool      `json:"optional,omitempty"`
 }

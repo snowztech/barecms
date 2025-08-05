@@ -48,13 +48,13 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
   const handleSubmit = async () => {
     console.log("fields", fields);
 
-    const hasEmptyFields = fields.some(
-      (field) => formState[field.name].trim() === "",
+    const hasRequiredFields = fields.some(
+      (field) => !field.optional && formState[field.name].trim() === "",
     );
 
-    console.log("hasEmptyFields", hasEmptyFields);
+    console.log("hasEmptyFields", hasRequiredFields);
 
-    if (hasEmptyFields) {
+    if (hasRequiredFields) {
       setError("All fields are required.");
       return;
     }
@@ -64,8 +64,10 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
       // Prepare data with types
       const dataWithTypes = fields.reduce(
         (acc, field) => {
+          let value = formState[field.name]
+          if (field.optional && value.trim() === "") value = null
           acc[field.name] = {
-            value: formState[field.name],
+            value,
             type: field.type,
           };
           return acc;
@@ -101,7 +103,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             value={formState[field.name]}
             onChange={handleInputChange}
             className="input input-bordered w-full"
-            required
+            required={!field.optional}
           />
         );
       case FieldType.STRING:
@@ -113,7 +115,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             value={formState[field.name]}
             onChange={handleInputChange}
             className="input input-bordered w-full"
-            required
+            required={!field.optional}
           />
         );
       case FieldType.TEXT:
@@ -124,7 +126,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             value={formState[field.name]}
             onChange={handleInputChange}
             className="textarea textarea-bordered w-full"
-            required
+            required={!field.optional}
           />
         );
       case FieldType.NUMBER:
@@ -136,7 +138,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             value={formState[field.name]}
             onChange={handleInputChange}
             className="input input-bordered w-full"
-            required
+            required={!field.optional}
           />
         );
       case FieldType.BOOLEAN:
@@ -147,7 +149,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             value={formState[field.name]}
             onChange={handleInputChange}
             className="select select-bordered w-full"
-            required
+            required={!field.optional}
           >
             <option disabled selected>
               Select an option
@@ -165,7 +167,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             value={formState[field.name]}
             onChange={handleInputChange}
             className="input input-bordered w-full"
-            required
+            required={!field.optional}
           />
         );
       case FieldType.IMAGE:
@@ -177,7 +179,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             value={formState[field.name]}
             onChange={handleInputChange}
             className="input input-bordered w-full"
-            required
+            required={!field.optional}
           />
         );
       default:
@@ -189,7 +191,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             value={formState[field.name]}
             onChange={handleInputChange}
             className="input input-bordered w-full"
-            required
+            required={!field.optional}
           />
         );
     }
@@ -207,7 +209,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
                 className="block text-sm font-medium text-gray-700 mb-2"
                 htmlFor={field.name}
               >
-                {field.name} ({field.type})
+                {field.name} ({field.type}{field.optional && ', optional'})
               </label>
               {renderFieldInput(field)}
             </div>

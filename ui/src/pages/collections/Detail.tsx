@@ -139,7 +139,7 @@ const CollectionDetailsPage: React.FC = () => {
                 <h3 className="text-display text-base font-medium text-base-content mb-1">
                   {field.name}
                 </h3>
-                <p className="badge-bare">{field.type}</p>
+                <p className="badge-bare">{field.type}{field.optional && ', optional'}</p>
               </div>
             ))}
           </div>

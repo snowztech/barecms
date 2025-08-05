@@ -15,4 +15,5 @@ export const VALID_FIELD_TYPES = Object.values(FieldType);
 export interface Field {
   name: string;
   type: FieldType;
+  optional?: boolean;
 }
