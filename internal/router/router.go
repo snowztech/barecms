@@ -34,6 +34,8 @@ func Setup(service *services.Service, config configs.AppConfig) *echo.Echo {
 	}))
 
 	h := handlers.NewHandler(service, config)
+	r.GET("/healthz", h.Health)
+	r.GET("/readyz", h.Readiness)
 	api := r.Group("/api")
 	api.GET("/health", h.Health)
 

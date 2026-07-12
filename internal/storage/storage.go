@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"log/slog"
 
 	"github.com/pkg/errors"
@@ -10,6 +11,14 @@ import (
 
 type Storage struct {
 	DB *gorm.DB
+}
+
+func (s *Storage) Ping(ctx context.Context) error {
+	database, err := s.DB.DB()
+	if err != nil {
+		return err
+	}
+	return database.PingContext(ctx)
 }
 
 func NewStorage(databaseURL string) (*Storage, error) {
