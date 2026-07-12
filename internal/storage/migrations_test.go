@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type legacyCollection struct {
+type preMigrationCollectionSchema struct {
 	ID     string         `gorm:"primaryKey"`
 	SiteID string         `gorm:"not null"`
 	Slug   string         `gorm:"uniqueIndex;not null"`
@@ -16,7 +16,7 @@ type legacyCollection struct {
 	Fields datatypes.JSON `gorm:"type:jsonb"`
 }
 
-func (legacyCollection) TableName() string { return "collections" }
+func (preMigrationCollectionSchema) TableName() string { return "collections" }
 
 func migrationTestDB(t *testing.T) *gorm.DB {
 	t.Helper()
@@ -67,10 +67,10 @@ func TestCollectionSlugIsUniqueWithinSite(t *testing.T) {
 
 func TestMigrationsUpgradeLegacyGlobalCollectionIndex(t *testing.T) {
 	db := migrationTestDB(t)
-	if err := db.AutoMigrate(&SiteDB{}, &legacyCollection{}); err != nil {
+	if err := db.AutoMigrate(&SiteDB{}, &preMigrationCollectionSchema{}); err != nil {
 		t.Fatal(err)
 	}
-	if !db.Migrator().HasIndex(&legacyCollection{}, "idx_collections_slug") {
+	if !db.Migrator().HasIndex(&preMigrationCollectionSchema{}, "idx_collections_slug") {
 		t.Fatal("legacy index was not created")
 	}
 	if err := runMigrations(db); err != nil {
