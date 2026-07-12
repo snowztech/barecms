@@ -9,3 +9,6 @@ barecms.db
 
 #environment
 .env
+
+#other
+ignored/

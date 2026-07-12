@@ -1,18 +1,27 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import CreateCollectionModal from "@/components/modals/CreateCollectionModal";
 import { useSiteDetail } from "@/hooks/useSiteDetail";
 import Loader from "@/components/Loader";
 import useDelete from "@/hooks/useDelete";
 import ViewSiteDataModal from "@/components/modals/ViewSiteDataModal";
+import SiteUsers from "@/components/SiteUsers";
+import { useAuth } from "@/contexts/AuthContext";
+import { ROLES } from "@/types/auth";
 
 const SiteDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { site, collections, loading, error } = useSiteDetail(id);
   const { isDeleting, handleDelete } = useDelete(`/sites/${id || ""}`, "/");
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState<'collections' | 'team'>('collections');
 
   const collectionModalRef = useRef<HTMLDialogElement>(null);
   const viewDataModalRef = useRef<HTMLDialogElement>(null);
+
+  // Determine user role (owner if site.ownerId === user.id, otherwise check SiteUser)
+  const isOwner = site?.ownerId === user?.id;
+  const currentUserRole = isOwner ? ROLES.OWNER : ROLES.VIEWER; // Default to viewer, actual role would come from SiteUser query
 
   const openCollectionModal = () => {
     if (collectionModalRef.current) {
@@ -122,24 +131,41 @@ const SiteDetailsPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Tabs */}
+      <div className="tabs tabs-bordered mb-8">
+        <button
+          className={`tab tab-lg ${activeTab === 'collections' ? 'tab-active' : ''}`}
+          onClick={() => setActiveTab('collections')}
+        >
+          Collections
+        </button>
+        <button
+          className={`tab tab-lg ${activeTab === 'team' ? 'tab-active' : ''}`}
+          onClick={() => setActiveTab('team')}
+        >
+          Team
+        </button>
+      </div>
+
       {/* Collections Section */}
-      <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h2 className="text-display text-2xl font-semibold text-base-content mb-2">
-              Collections
-            </h2>
-            <p className="text-bare-600">
-              Organize your content into collections
-            </p>
+      {activeTab === 'collections' && (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h2 className="text-display text-2xl font-semibold text-base-content mb-2">
+                Collections
+              </h2>
+              <p className="text-bare-600">
+                Organize your content into collections
+              </p>
+            </div>
+            <button
+              className="btn btn-primary px-6 py-3 font-medium"
+              onClick={openCollectionModal}
+            >
+              + New Collection
+            </button>
           </div>
-          <button
-            className="btn btn-primary px-6 py-3 font-medium"
-            onClick={openCollectionModal}
-          >
-            + New Collection
-          </button>
-        </div>
 
         {collections.length === 0 ? (
           <div className="text-center py-16">
@@ -185,7 +211,15 @@ const SiteDetailsPage: React.FC = () => {
             ))}
           </div>
         )}
-      </div>
+        </div>
+      )}
+
+      {/* Team Section */}
+      {activeTab === 'team' && (
+        <div>
+          <SiteUsers siteId={site.id} currentUserRole={currentUserRole} />
+        </div>
+      )}
 
       <CreateCollectionModal siteId={site.id} dialogRef={collectionModalRef} />
       <ViewSiteDataModal siteSlug={site.slug} dialogRef={viewDataModalRef} />
