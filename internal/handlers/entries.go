@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"barecms/internal/models"
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -33,13 +35,35 @@ func (h *Handler) GetEntry(c echo.Context) error {
 
 func (h *Handler) GetCollectionEntries(c echo.Context) error {
 	id := c.Param("id")
+	page, err := paginationParameter("page", c.QueryParam("page"), 1, 1, 0)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	limit, err := paginationParameter("limit", c.QueryParam("limit"), 20, 1, 100)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
 
-	entries, err := h.Service.GetEntriesByCollectionID(id, currentUserID(c))
+	entries, err := h.Service.GetEntriesPage(id, currentUserID(c), page, limit)
 	if err != nil {
 		return serviceError(err)
 	}
 
 	return c.JSON(http.StatusOK, entries)
+}
+
+func paginationParameter(name, raw string, fallback, minimum, maximum int) (int, error) {
+	if raw == "" {
+		return fallback, nil
+	}
+	value, err := strconv.Atoi(raw)
+	if err != nil || value < minimum || (maximum > 0 && value > maximum) {
+		if maximum == 0 {
+			return 0, fmt.Errorf("%s must be an integer of at least %d", name, minimum)
+		}
+		return 0, fmt.Errorf("%s must be an integer between %d and %d", name, minimum, maximum)
+	}
+	return value, nil
 }
 
 func (h *Handler) DeleteEntry(c echo.Context) error {

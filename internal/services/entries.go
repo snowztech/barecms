@@ -61,6 +61,22 @@ func (s *Service) GetEntriesByCollectionID(collectionID, userID string) ([]model
 	return entries, nil
 }
 
+func (s *Service) GetEntriesPage(collectionID, userID string, page, limit int) (models.EntryPage, error) {
+	if err := s.requireCollectionOwner(userID, collectionID); err != nil {
+		return models.EntryPage{}, err
+	}
+	entriesDB, total, err := s.Storage.GetEntriesPage(collectionID, limit, (page-1)*limit)
+	if err != nil {
+		return models.EntryPage{}, err
+	}
+	entries := make([]models.Entry, len(entriesDB))
+	for i, entryDB := range entriesDB {
+		entries[i] = mapToEntry(entryDB)
+	}
+	totalPages := int((total + int64(limit) - 1) / int64(limit))
+	return models.EntryPage{Entries: entries, Pagination: models.Pagination{Page: page, Limit: limit, Total: total, TotalPages: totalPages}}, nil
+}
+
 func (s *Service) DeleteEntry(id, userID string) error {
 	if err := s.requireEntryOwner(userID, id); err != nil {
 		return err

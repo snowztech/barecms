@@ -24,6 +24,13 @@ export interface Entry {
     data: Record<string, any>;
 }
 
+export interface Pagination {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+}
+
 export interface User {
     id: string;
     email: string;

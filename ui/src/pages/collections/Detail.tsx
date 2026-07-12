@@ -8,7 +8,7 @@ import useDelete from "@/hooks/useDelete";
 
 const CollectionDetailsPage: React.FC = () => {
   const { id, siteId } = useParams<{ id: string; siteId: string }>();
-  const { collection, entries, site, loading, error } = useCollectionDetail(
+  const { collection, entries, site, pagination, setPage, loading, error } = useCollectionDetail(
     id,
     siteId,
   );
@@ -192,6 +192,27 @@ const CollectionDetailsPage: React.FC = () => {
                 Create First Entry
               </button>
             </div>
+          </div>
+        )}
+        {pagination.totalPages > 1 && (
+          <div className="flex items-center justify-center gap-3 pt-4">
+            <button
+              className="btn btn-sm"
+              disabled={pagination.page <= 1}
+              onClick={() => setPage(pagination.page - 1)}
+            >
+              Previous
+            </button>
+            <span className="text-sm text-bare-600">
+              Page {pagination.page} of {pagination.totalPages} · {pagination.total} entries
+            </span>
+            <button
+              className="btn btn-sm"
+              disabled={pagination.page >= pagination.totalPages}
+              onClick={() => setPage(pagination.page + 1)}
+            >
+              Next
+            </button>
           </div>
         )}
       </div>

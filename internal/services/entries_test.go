@@ -52,3 +52,19 @@ func TestUpdateEntryValidatesOwnershipAndSchema(t *testing.T) {
 		t.Fatalf("unexpected data: %s", updated.Data)
 	}
 }
+
+func TestGetEntriesPageReturnsBoundedMetadata(t *testing.T) {
+	service := entryTestService(t)
+	for _, id := range []string{"entry-2", "entry-3", "entry-4"} {
+		if err := service.Storage.CreateEntry(storage.EntryDB{ID: id, CollectionID: "collection-1", Data: datatypes.JSON(`{"title":{"value":"Post","type":"string"}}`)}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	result, err := service.GetEntriesPage("collection-1", "owner-1", 2, 2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(result.Entries) != 2 || result.Pagination.Total != 4 || result.Pagination.TotalPages != 2 || result.Pagination.Page != 2 {
+		t.Fatalf("unexpected page: %+v", result)
+	}
+}
