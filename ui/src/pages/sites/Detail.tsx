@@ -5,6 +5,7 @@ import { useSiteDetail } from "@/hooks/useSiteDetail";
 import Loader from "@/components/Loader";
 import useDelete from "@/hooks/useDelete";
 import ViewSiteDataModal from "@/components/modals/ViewSiteDataModal";
+import CreateSiteModal from "@/components/modals/CreateSiteModal";
 
 const SiteDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +14,7 @@ const SiteDetailsPage: React.FC = () => {
 
   const collectionModalRef = useRef<HTMLDialogElement>(null);
   const viewDataModalRef = useRef<HTMLDialogElement>(null);
+  const editSiteModalRef = useRef<HTMLDialogElement>(null);
 
   const openCollectionModal = () => {
     if (collectionModalRef.current) {
@@ -110,6 +112,14 @@ const SiteDetailsPage: React.FC = () => {
             >
               <li>
                 <button
+                  onClick={() => editSiteModalRef.current?.showModal()}
+                  className="text-sm w-full text-left"
+                >
+                  Edit Site
+                </button>
+              </li>
+              <li>
+                <button
                   onClick={handleDelete}
                   className="text-sm text-error hover:bg-error/10 transition-colors w-full text-left"
                   disabled={isDeleting}
@@ -188,6 +198,7 @@ const SiteDetailsPage: React.FC = () => {
       </div>
 
       <CreateCollectionModal siteId={site.id} dialogRef={collectionModalRef} />
+      <CreateSiteModal siteId={site.id} initialName={site.name} dialogRef={editSiteModalRef} />
       <ViewSiteDataModal siteSlug={site.slug} dialogRef={viewDataModalRef} />
     </div>
   );

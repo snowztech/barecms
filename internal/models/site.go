@@ -12,6 +12,10 @@ type CreateSiteRequest struct {
 	UserID string `json:"userId"`
 }
 
+type UpdateSiteRequest struct {
+	Name string `json:"name"`
+}
+
 type SiteData struct {
 	ID   string                 `json:"id"`
 	Name string                 `json:"name"`

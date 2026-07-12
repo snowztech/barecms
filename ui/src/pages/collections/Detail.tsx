@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import EntryCard from "@/components/cards/EntryCard";
 import Loader from "@/components/Loader";
 import CreateEntryModal from "@/components/modals/CreateEntryModal";
+import CreateCollectionModal from "@/components/modals/CreateCollectionModal";
 import { useCollectionDetail } from "@/hooks/useCollectionDetail";
 import useDelete from "@/hooks/useDelete";
 
@@ -19,6 +20,7 @@ const CollectionDetailsPage: React.FC = () => {
   );
 
   const entryModalRef = useRef<HTMLDialogElement>(null);
+  const editCollectionModalRef = useRef<HTMLDialogElement>(null);
 
   const openEntryModal = () => {
     if (entryModalRef.current) {
@@ -114,6 +116,14 @@ const CollectionDetailsPage: React.FC = () => {
             tabIndex={0}
             className="dropdown-content dropdown-bare menu bg-base-100 rounded-bare z-[1] p-2 w-40 shadow-bare-lg mt-2"
           >
+            <li>
+              <button
+                onClick={() => editCollectionModalRef.current?.showModal()}
+                className="text-sm w-full text-left"
+              >
+                Edit Collection
+              </button>
+            </li>
             <li>
               <button
                 onClick={handleDelete}
@@ -222,6 +232,13 @@ const CollectionDetailsPage: React.FC = () => {
         collectionId={collection.id}
         siteId={siteId as string}
         fields={collection.fields}
+      />
+      <CreateCollectionModal
+        siteId={siteId as string}
+        collectionId={collection.id}
+        initialName={collection.name}
+        initialFields={collection.fields}
+        dialogRef={editCollectionModalRef}
       />
     </div>
   );

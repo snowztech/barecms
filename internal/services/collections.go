@@ -6,7 +6,6 @@ import (
 	"barecms/internal/utils"
 	"encoding/json"
 
-	"github.com/pkg/errors"
 	"gorm.io/datatypes"
 )
 
@@ -15,11 +14,8 @@ func (s *Service) CreateCollection(request models.CreateCollectionRequest, userI
 		return err
 	}
 
-	// Validate field types
-	for _, field := range request.Fields {
-		if !models.IsValidFieldType(string(field.Type)) {
-			return errors.New("invalid field type: " + string(field.Type))
-		}
+	if err := validateCollectionSchema(request.Name, request.Fields); err != nil {
+		return err
 	}
 
 	// Convert fields to JSON for storage
@@ -40,6 +36,32 @@ func (s *Service) CreateCollection(request models.CreateCollectionRequest, userI
 		return err
 	}
 	return nil
+}
+
+func (s *Service) UpdateCollection(id, userID string, request models.UpdateCollectionRequest) (models.Collection, error) {
+	if err := s.requireCollectionOwner(userID, id); err != nil {
+		return models.Collection{}, err
+	}
+	if err := validateCollectionSchema(request.Name, request.Fields); err != nil {
+		return models.Collection{}, err
+	}
+	entries, err := s.Storage.GetEntriesByCollectionID(id)
+	if err != nil {
+		return models.Collection{}, err
+	}
+	for _, entry := range entries {
+		if err := validateEntryData(json.RawMessage(entry.Data), request.Fields); err != nil {
+			return models.Collection{}, &ValidationError{Fields: map[string]string{"fields": "schema is incompatible with existing entry " + entry.ID}}
+		}
+	}
+	fieldsJSON, err := json.Marshal(request.Fields)
+	if err != nil {
+		return models.Collection{}, err
+	}
+	if err := s.Storage.UpdateCollection(id, request.Name, datatypes.JSON(fieldsJSON)); err != nil {
+		return models.Collection{}, err
+	}
+	return s.GetCollectionByID(id, userID)
 }
 
 func (s *Service) GetCollectionByID(collectionID, userID string) (models.Collection, error) {

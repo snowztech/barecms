@@ -18,6 +18,10 @@ The basics every CMS needs. Without these, MCP positioning means nothing.
 - [x] **Entry editing workflow** (`feature/content-updates`)
   - Tenant-safe update endpoint with schema validation
   - Editor UI reusing typed controls and the media picker
+- [x] **Complete essential CRUD** (`feature/site-collection-updates`)
+  - Tenant-safe site renaming with stable public slugs
+  - Collection name/schema editing with existing-entry compatibility checks
+  - Minimal edit controls reusing existing modals
 
 ### Security and tenant isolation
 

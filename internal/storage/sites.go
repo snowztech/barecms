@@ -28,6 +28,10 @@ func (s *Storage) GetSite(id string) (SiteDB, error) {
 	return site, nil
 }
 
+func (s *Storage) UpdateSiteName(id, name string) error {
+	return s.DB.Model(&SiteDB{}).Where("id = ?", id).Update("name", name).Error
+}
+
 func (s *Storage) DeleteSite(id string) error {
 	deleted := s.DB.Where("id = ?", id).Delete(&SiteDB{})
 	if deleted.Error != nil {

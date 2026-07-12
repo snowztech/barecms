@@ -1,24 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useApi } from "@/hooks/useApi";
 import { Field, FieldType, VALID_FIELD_TYPES } from "@/types/fields";
 
 interface CreateCollectionModalProps {
   siteId: string;
   dialogRef: React.RefObject<HTMLDialogElement>;
+  collectionId?: string;
+  initialName?: string;
+  initialFields?: Field[];
 }
 
 const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
   siteId,
   dialogRef,
+  collectionId,
+  initialName = "",
+  initialFields = [],
 }) => {
-  const [collectionName, setCollectionName] = useState("");
-  const [fields, setFields] = useState<Field[]>([]);
+  const [collectionName, setCollectionName] = useState(initialName);
+  const [fields, setFields] = useState<Field[]>(initialFields);
   const [newFieldName, setNewFieldName] = useState("");
   const [newFieldType, setNewFieldType] = useState<FieldType>(FieldType.STRING);
   const [newFieldOptional, setNewFieldOptional] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null);
   const [fieldsError, setFieldsError] = useState<string | null>(null);
   const { request, loading } = useApi();
+
+  useEffect(() => {
+    setCollectionName(initialName);
+    setFields(initialFields);
+  }, [initialFields, initialName]);
 
   const handleCollectionNameChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -58,6 +69,7 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
     ]);
     setNewFieldName("");
     setNewFieldType(FieldType.STRING);
+    setNewFieldOptional(false);
   };
 
   const removeField = (index: number) => {
@@ -86,8 +98,8 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
     setFieldsError(null);
     try {
       await request({
-        url: "/collections",
-        method: "POST",
+        url: collectionId ? `/collections/${collectionId}` : "/collections",
+        method: collectionId ? "PUT" : "POST",
         data: {
           name: collectionName,
           fields,
@@ -95,7 +107,6 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
         },
       });
 
-      console.log("Collection created successfully");
       closeDialog();
       setTimeout(() => {
         window.location.reload();
@@ -104,15 +115,17 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
       console.error(e);
       setError(e.message || "Failed to create collection. Please try again.");
     } finally {
-      setCollectionName("");
-      setFields([]);
+      if (!collectionId) {
+        setCollectionName("");
+        setFields([]);
+      }
     }
   };
 
   return (
     <dialog className="modal" ref={dialogRef}>
       <div className="modal-box">
-        <h3 className="font-bold text-lg mb-3">Create new collection</h3>
+        <h3 className="font-bold text-lg mb-3">{collectionId ? "Edit collection" : "Create new collection"}</h3>
         <input
           type="text"
           placeholder="Enter collection name"
@@ -177,7 +190,7 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
             onClick={handleSubmit}
             className="btn btn-primary"
           >
-            {loading ? "Creating..." : "Create"}
+            {loading ? "Saving..." : collectionId ? "Save changes" : "Create"}
           </button>
           <button className="btn" onClick={closeDialog}>
             Cancel
