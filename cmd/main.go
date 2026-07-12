@@ -24,6 +24,9 @@ func NewApp() *App {
 func (app *App) setup() {
 	slog.Info("Setting up the app")
 	cfg := configs.LoadAppConfig()
+	if err := cfg.Validate(); err != nil {
+		panic(fmt.Sprintf("Invalid configuration: %v", err))
+	}
 	svc := services.NewService(cfg)
 	r := router.Setup(svc, cfg)
 	app.router = r

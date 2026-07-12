@@ -22,8 +22,8 @@ The basics every CMS needs. Without these, MCP positioning means nothing.
   - Bind newly created sites to the JWT identity
   - Enforce ownership through site, collection, and entry relationships
 - [x] Add cross-tenant authorization regression tests
-- [ ] Reject insecure default secrets in production
-- [ ] Add authentication rate limiting and request size limits
+- [x] Reject insecure default secrets in production (`security/config-hardening`)
+- [x] Add authentication rate limiting, request size limits, and security headers
 
 - [ ] **Local file and image storage** (critical)
   - Upload and serving endpoints
