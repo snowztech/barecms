@@ -198,6 +198,7 @@ const CollectionDetailsPage: React.FC = () => {
       <CreateEntryModal
         dialogRef={entryModalRef}
         collectionId={collection.id}
+        siteId={siteId as string}
         fields={collection.fields}
       />
     </div>

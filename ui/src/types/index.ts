@@ -37,3 +37,12 @@ export interface SiteData {
     data: any;
 }
 
+export interface MediaFile {
+    id: string;
+    siteId: string;
+    originalName: string;
+    mimeType: string;
+    size: number;
+    url: string;
+    createdAt: string;
+}

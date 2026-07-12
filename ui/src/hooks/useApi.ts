@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import apiClient from "@/lib/api";
 import { AxiosRequestConfig } from "axios";
 
@@ -6,7 +6,7 @@ export const useApi = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const request = async (config: AxiosRequestConfig) => {
+  const request = useCallback(async (config: AxiosRequestConfig) => {
     setLoading(true);
     setError(null);
 
@@ -21,7 +21,7 @@ export const useApi = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   return { request, loading, error };
 };
