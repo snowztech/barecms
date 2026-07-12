@@ -20,8 +20,8 @@ func (SiteDB) TableName() string {
 type CollectionDB struct {
 	ID      string         `gorm:"primaryKey"`
 	Name    string         `gorm:"not null"`
-	Slug    string         `gorm:"uniqueIndex;not null"`
-	SiteID  string         `gorm:"not null"`
+	Slug    string         `gorm:"not null;uniqueIndex:idx_collections_site_slug,priority:2"`
+	SiteID  string         `gorm:"not null;index;uniqueIndex:idx_collections_site_slug,priority:1"`
 	Fields  datatypes.JSON `gorm:"type:jsonb"`
 	Entries []EntryDB      `gorm:"foreignKey:CollectionID"`
 }
@@ -32,7 +32,7 @@ func (CollectionDB) TableName() string {
 
 type EntryDB struct {
 	ID           string         `gorm:"primaryKey"`
-	CollectionID string         `gorm:"not null"`
+	CollectionID string         `gorm:"not null;index"`
 	Data         datatypes.JSON `gorm:"type:jsonb"`
 }
 
@@ -62,3 +62,10 @@ func (MediaFileDB) TableName() string { return "media_files" }
 func (UserDB) TableName() string {
 	return "users"
 }
+
+type SchemaMigrationDB struct {
+	Version   string    `gorm:"primaryKey"`
+	AppliedAt time.Time `gorm:"autoCreateTime"`
+}
+
+func (SchemaMigrationDB) TableName() string { return "schema_migrations" }
