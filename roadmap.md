@@ -15,6 +15,10 @@ What works today:
 
 The basics every CMS needs. Without these, MCP positioning means nothing.
 
+- [x] **Entry editing workflow** (`feature/content-updates`)
+  - Tenant-safe update endpoint with schema validation
+  - Editor UI reusing typed controls and the media picker
+
 ### Security and tenant isolation
 
 - [x] **Tenant authorization implementation** (`security/tenant-authorization`)

@@ -52,3 +52,15 @@ func (h *Handler) DeleteEntry(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "Entry deleted!"})
 }
+
+func (h *Handler) UpdateEntry(c echo.Context) error {
+	var request models.UpdateEntryRequest
+	if err := c.Bind(&request); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
+	}
+	entry, err := h.Service.UpdateEntry(c.Param("id"), currentUserID(c), request)
+	if err != nil {
+		return serviceError(err)
+	}
+	return c.JSON(http.StatusOK, entry)
+}

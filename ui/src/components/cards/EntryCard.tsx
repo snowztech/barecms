@@ -1,8 +1,9 @@
 import useDelete from "@/hooks/useDelete";
-import { Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import Loader from "@/components/Loader";
-import React from "react";
-import { FieldType } from "@/types/fields";
+import React, { useRef } from "react";
+import { Field, FieldType } from "@/types/fields";
+import CreateEntryModal from "@/components/modals/CreateEntryModal";
 
 interface EntryData {
   value: any;
@@ -14,6 +15,7 @@ interface EntryCardProps {
   collectionId: string;
   entryId: string;
   data: Record<string, EntryData>;
+  fields: Field[];
 }
 
 const EntryCard: React.FC<EntryCardProps> = ({
@@ -21,7 +23,9 @@ const EntryCard: React.FC<EntryCardProps> = ({
   siteId,
   entryId,
   data,
+  fields,
 }) => {
+	const editModalRef = useRef<HTMLDialogElement>(null);
   const { isDeleting, error, handleDelete } = useDelete(
     `/entries/${entryId}`,
     `/sites/${siteId}/collections/${collectionId}`,
@@ -104,7 +108,14 @@ const EntryCard: React.FC<EntryCardProps> = ({
         ))}
       </div>
 
-      <div className="flex justify-end border-t border-bare-200 pt-3 mt-3">
+      <div className="flex justify-end gap-1 border-t border-bare-200 pt-3 mt-3">
+        <button
+          onClick={() => editModalRef.current?.showModal()}
+          className="p-2 text-bare-400 hover:text-primary transition-colors rounded"
+          aria-label="Edit entry"
+        >
+          <Pencil size={16} />
+        </button>
         <button
           onClick={handleDelete}
           className="p-2 text-bare-400 hover:text-error transition-colors rounded"
@@ -113,6 +124,14 @@ const EntryCard: React.FC<EntryCardProps> = ({
           <Trash2 size={16} />
         </button>
       </div>
+      <CreateEntryModal
+        dialogRef={editModalRef}
+        collectionId={collectionId}
+        siteId={siteId}
+        fields={fields}
+        entryId={entryId}
+        initialData={data}
+      />
     </div>
   );
 };

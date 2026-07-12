@@ -12,3 +12,7 @@ type CreateEntryRequest struct {
 	CollectionID string          `json:"collectionId"`
 	Data         json.RawMessage `json:"data"`
 }
+
+type UpdateEntryRequest struct {
+	Data json.RawMessage `json:"data"`
+}

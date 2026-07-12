@@ -26,6 +26,10 @@ func (s *Storage) GetEntriesByCollectionID(collectionID string) ([]EntryDB, erro
 	return entries, nil
 }
 
+func (s *Storage) UpdateEntryData(id string, data []byte) error {
+	return s.DB.Model(&EntryDB{}).Where("id = ?", id).Update("data", data).Error
+}
+
 func (s *Storage) DeleteEntry(id string) error {
 	deleted := s.DB.Where("id = ?", id).Delete(&EntryDB{})
 	if deleted.Error != nil {

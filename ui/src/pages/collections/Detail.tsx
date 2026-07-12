@@ -172,6 +172,7 @@ const CollectionDetailsPage: React.FC = () => {
                 collectionId={collection.id}
                 entryId={entry.id}
                 data={entry.data}
+                fields={collection.fields}
               />
             ))}
           </div>
