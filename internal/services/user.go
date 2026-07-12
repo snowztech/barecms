@@ -3,6 +3,9 @@ package services
 import (
 	"barecms/internal/models"
 	"barecms/internal/storage"
+	"log/slog"
+	"os"
+	"path/filepath"
 
 	"github.com/pkg/errors"
 )
@@ -19,59 +22,15 @@ func (s *Service) GetUser(userID string) (models.User, error) {
 }
 
 func (s *Service) DeleteUser(userID string) error {
-	// Delete user resources first
-	if err := s.DeleteUserResources(userID); err != nil {
-		return errors.Wrap(err, "failed to delete user resources")
-	}
-
-	// Finally, delete the user itself
-	if err := s.Storage.DeleteUserByID(userID); err != nil {
+	media, err := s.Storage.DeleteUserCascade(userID)
+	if err != nil {
 		return errors.Wrap(err, "failed to delete user")
 	}
-
-	return nil
-}
-
-func (s *Service) DeleteUserResources(userID string) error {
-	// Get sites owned by the user
-	userSites, err := s.Storage.GetSitesByUserID(userID)
-	if err != nil {
-		return errors.Wrap(err, "failed to get user sites")
-	}
-	var siteIDs []string
-	for _, site := range userSites {
-		siteIDs = append(siteIDs, site.ID)
-	}
-
-	// Get collections from the sites
-	siteCollections, err := s.Storage.GetCollectionsFromSitesIDs(siteIDs)
-	if err != nil {
-		return errors.Wrap(err, "failed to get collections from sites")
-	}
-	var collectionIDs []string
-	for _, collection := range siteCollections {
-		collectionIDs = append(collectionIDs, collection.ID)
-	}
-
-	// Delete entries by collection IDs
-	if len(collectionIDs) > 0 {
-		if err := s.Storage.DeleteEntriesByCollectionIDs(collectionIDs); err != nil {
-			return errors.Wrap(err, "failed to delete entries")
+	for _, file := range media {
+		if err := os.Remove(filepath.Join(s.Config.UploadsDir, file.StoredName)); err != nil && !os.IsNotExist(err) {
+			slog.Warn("Could not remove deleted user's media file", "file", file.StoredName, "error", err)
 		}
 	}
-
-	// Delete collections by site IDs
-	if len(siteIDs) > 0 {
-		if err := s.Storage.DeleteCollectionsBySiteIDs(siteIDs); err != nil {
-			return errors.Wrap(err, "failed to delete collections")
-		}
-	}
-
-	// Delete sites by user ID
-	if err := s.Storage.DeleteSitesByUserID(userID); err != nil {
-		return errors.Wrap(err, "failed to delete sites")
-	}
-
 	return nil
 }
 

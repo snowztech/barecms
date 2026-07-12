@@ -1,5 +1,7 @@
 package storage
 
+import "gorm.io/gorm"
+
 func (s *Storage) CreateSite(site SiteDB) error {
 	created := s.DB.Create(&site)
 	if created.Error != nil {
@@ -32,6 +34,34 @@ func (s *Storage) DeleteSite(id string) error {
 		return deleted.Error
 	}
 	return nil
+}
+
+func (s *Storage) DeleteSiteCascade(id string) ([]MediaFileDB, error) {
+	var media []MediaFileDB
+	err := s.DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Where("site_id = ?", id).Find(&media).Error; err != nil {
+			return err
+		}
+		collectionIDs := tx.Model(&CollectionDB{}).Select("id").Where("site_id = ?", id)
+		if err := tx.Where("collection_id IN (?)", collectionIDs).Delete(&EntryDB{}).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("site_id = ?", id).Delete(&CollectionDB{}).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("site_id = ?", id).Delete(&MediaFileDB{}).Error; err != nil {
+			return err
+		}
+		result := tx.Where("id = ?", id).Delete(&SiteDB{})
+		if result.Error != nil {
+			return result.Error
+		}
+		if result.RowsAffected != 1 {
+			return gorm.ErrRecordNotFound
+		}
+		return nil
+	})
+	return media, err
 }
 
 func (s *Storage) DeleteSitesByUserID(userID string) error {

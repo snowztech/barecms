@@ -1,6 +1,9 @@
 package storage
 
-import "github.com/pkg/errors"
+import (
+	"github.com/pkg/errors"
+	"gorm.io/gorm"
+)
 
 func (s *Storage) CreateUser(user UserDB) error {
 	created := s.DB.Create(&user)
@@ -47,4 +50,36 @@ func (s *Storage) DeleteUserByID(id string) error {
 	}
 	// todo: delete all user resources
 	return nil
+}
+
+func (s *Storage) DeleteUserCascade(id string) ([]MediaFileDB, error) {
+	var media []MediaFileDB
+	err := s.DB.Transaction(func(tx *gorm.DB) error {
+		siteIDs := tx.Model(&SiteDB{}).Select("id").Where("user_id = ?", id)
+		collectionIDs := tx.Model(&CollectionDB{}).Select("id").Where("site_id IN (?)", siteIDs)
+		if err := tx.Where("site_id IN (?)", siteIDs).Find(&media).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("collection_id IN (?)", collectionIDs).Delete(&EntryDB{}).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("site_id IN (?)", siteIDs).Delete(&CollectionDB{}).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("site_id IN (?)", siteIDs).Delete(&MediaFileDB{}).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("user_id = ?", id).Delete(&SiteDB{}).Error; err != nil {
+			return err
+		}
+		result := tx.Where("id = ?", id).Delete(&UserDB{})
+		if result.Error != nil {
+			return result.Error
+		}
+		if result.RowsAffected != 1 {
+			return gorm.ErrRecordNotFound
+		}
+		return nil
+	})
+	return media, err
 }

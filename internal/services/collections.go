@@ -74,15 +74,7 @@ func (s *Service) DeleteCollection(collectionID, userID string) error {
 		return err
 	}
 
-	if err := s.Storage.DeleteEntriesByCollectionID(collectionID); err != nil {
-		return err
-	}
-
-	if err := s.Storage.DeleteCollection(collectionID); err != nil {
-		return err
-	}
-
-	return nil
+	return s.Storage.DeleteCollection(collectionID)
 }
 
 func mapToCollectionDB(collection models.Collection, fieldsJSON []byte) storage.CollectionDB {
