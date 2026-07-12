@@ -25,12 +25,12 @@ The basics every CMS needs. Without these, MCP positioning means nothing.
 - [x] Reject insecure default secrets in production (`security/config-hardening`)
 - [x] Add authentication rate limiting, request size limits, and security headers
 
-- [ ] **Local file and image storage** (critical)
+- [x] **Local file and image storage** (critical)
   - [x] Site-owned upload, serving, listing, and deletion endpoints (`feature/local-media-storage`)
   - [x] Files table tracking size, MIME type, original name, and storage name
   - [x] MIME allowlist, opaque filenames, size limits, and traversal protection
   - [x] Persistent Docker upload volume
-  - Image picker in the collection editor
+  - [x] Image upload and existing-media picker in the collection editor (`feature/media-picker-ui`)
   - [x] `UPLOADS_DIR` and `MAX_FILE_SIZE` environment variables
 - [ ] **Input validation and structured error responses**
   - Required, type, and length checks at the model layer

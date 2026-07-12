@@ -1,15 +1,18 @@
 import { Field, FieldType } from "@/types/fields";
 import { useEffect, useState } from "react";
 import { useApi } from "@/hooks/useApi";
+import MediaPicker from "@/components/MediaPicker";
 
 interface CreateEntryModalProps {
   collectionId: string;
+  siteId: string;
   fields: Field[];
   dialogRef: React.RefObject<HTMLDialogElement>;
 }
 
 const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
   collectionId,
+  siteId,
   fields,
   dialogRef,
 }) => {
@@ -172,13 +175,12 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
         );
       case FieldType.IMAGE:
         return (
-          <input
-            type="url"
-            id={field.name}
-            name={field.name}
+          <MediaPicker
+            siteId={siteId}
             value={formState[field.name]}
-            onChange={handleInputChange}
-            className="input input-bordered w-full"
+            onChange={(url) =>
+              setFormState((previous) => ({ ...previous, [field.name]: url }))
+            }
             required={!field.optional}
           />
         );
