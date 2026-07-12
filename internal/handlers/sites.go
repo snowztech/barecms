@@ -8,7 +8,7 @@ import (
 )
 
 func (h *Handler) GetSites(c echo.Context) error {
-	sites, err := h.Service.GetSites()
+	sites, err := h.Service.GetSites(currentUserID(c))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
@@ -19,9 +19,9 @@ func (h *Handler) GetSites(c echo.Context) error {
 func (h *Handler) GetSite(c echo.Context) error {
 	id := c.Param("id")
 
-	site, err := h.Service.GetSite(id)
+	site, err := h.Service.GetSite(id, currentUserID(c))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return serviceError(err)
 	}
 
 	return c.JSON(http.StatusOK, map[string]models.Site{"site": site})
@@ -30,9 +30,9 @@ func (h *Handler) GetSite(c echo.Context) error {
 func (h *Handler) GetSiteWithCollections(c echo.Context) error {
 	id := c.Param("id")
 
-	siteWithCollections, err := h.Service.GetSiteWithCollections(id)
+	siteWithCollections, err := h.Service.GetSiteWithCollections(id, currentUserID(c))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return serviceError(err)
 	}
 
 	return c.JSON(http.StatusOK, siteWithCollections)
@@ -45,7 +45,7 @@ func (h *Handler) CreateSite(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	err := h.Service.CreateSite(req)
+	err := h.Service.CreateSite(req, currentUserID(c))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
@@ -55,9 +55,9 @@ func (h *Handler) CreateSite(c echo.Context) error {
 
 func (h *Handler) DeleteSite(c echo.Context) error {
 	id := c.Param("id")
-	err := h.Service.DeleteSite(id)
+	err := h.Service.DeleteSite(id, currentUserID(c))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return serviceError(err)
 	}
 	return c.JSON(http.StatusOK, map[string]string{"message": "Site deleted!"})
 }

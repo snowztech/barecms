@@ -10,7 +10,10 @@ import (
 	"gorm.io/datatypes"
 )
 
-func (s *Service) CreateCollection(request models.CreateCollectionRequest) error {
+func (s *Service) CreateCollection(request models.CreateCollectionRequest, userID string) error {
+	if err := s.requireSiteOwner(userID, request.SiteID); err != nil {
+		return err
+	}
 
 	// Validate field types
 	for _, field := range request.Fields {
@@ -39,7 +42,10 @@ func (s *Service) CreateCollection(request models.CreateCollectionRequest) error
 	return nil
 }
 
-func (s *Service) GetCollectionByID(collectionID string) (models.Collection, error) {
+func (s *Service) GetCollectionByID(collectionID, userID string) (models.Collection, error) {
+	if err := s.requireCollectionOwner(userID, collectionID); err != nil {
+		return models.Collection{}, err
+	}
 	collectionDB, err := s.Storage.GetCollection(collectionID)
 	if err != nil {
 		return models.Collection{}, err
@@ -47,7 +53,10 @@ func (s *Service) GetCollectionByID(collectionID string) (models.Collection, err
 	return mapToCollection(collectionDB), nil
 }
 
-func (s *Service) GetCollectionsBySiteID(siteID string) ([]models.Collection, error) {
+func (s *Service) GetCollectionsBySiteID(siteID, userID string) ([]models.Collection, error) {
+	if err := s.requireSiteOwner(userID, siteID); err != nil {
+		return nil, err
+	}
 	collectionsDB, err := s.Storage.GetCollectionsBySiteID(siteID)
 	if err != nil {
 		return nil, err
@@ -60,7 +69,10 @@ func (s *Service) GetCollectionsBySiteID(siteID string) ([]models.Collection, er
 
 }
 
-func (s *Service) DeleteCollection(collectionID string) error {
+func (s *Service) DeleteCollection(collectionID, userID string) error {
+	if err := s.requireCollectionOwner(userID, collectionID); err != nil {
+		return err
+	}
 
 	if err := s.Storage.DeleteEntriesByCollectionID(collectionID); err != nil {
 		return err
