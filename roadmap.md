@@ -61,7 +61,8 @@ The basics every CMS needs. Without these, MCP positioning means nothing.
   - Provide `.env.production` example
   - [x] Add liveness `/healthz`, database readiness `/readyz`, and container health check (`reliability/health-readiness`)
   - [x] Fail startup when database initialization fails
-  - Slim final image with multi-stage build
+  - [x] Reproducible multi-stage build, static binary, pinned runtime, and non-root container (`reliability/container-hardening`)
+  - [x] Production frontend dependency audit enforced in CI
 
 ## Phase 2. MCP-native pivot
 

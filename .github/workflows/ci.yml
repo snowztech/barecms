@@ -24,7 +24,12 @@ jobs:
       - name: UI dependencies
         run: |
           cd ui
-          npm install
+          npm ci
+
+      - name: Production dependency audit
+        run: |
+          cd ui
+          npm audit --omit=dev --audit-level=high
 
       - name: UI Lint
         run: |
