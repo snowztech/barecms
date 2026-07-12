@@ -84,6 +84,10 @@ BareCMS exposes two operational probes:
 The published container health check uses `/readyz`, so orchestrators do not
 route traffic to an instance while its database is unavailable.
 
+The application runs as the unprivileged `barecms` user (UID/GID `10001`). If
+you bind-mount a host directory instead of using the provided named volume,
+make that directory writable by UID/GID `10001` before starting the container.
+
 ## Database upgrades
 
 BareCMS applies numbered database migrations during startup and records them in
