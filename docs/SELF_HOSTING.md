@@ -64,7 +64,17 @@ JWT_SECRET=your-super-secret-jwt-key-here
 
 # Application Configuration
 PORT=8080
+
+# Persistent uploads
+UPLOADS_DIR=/app/uploads
+MAX_FILE_SIZE=10485760
+# Must be larger than MAX_FILE_SIZE to allow multipart overhead
+MAX_REQUEST_BODY=12M
 ```
+
+The Compose configuration mounts `/app/uploads` in a named `uploads_data`
+volume. Back up this volume together with PostgreSQL; database-only backups do
+not contain uploaded media.
 
 💡 **Generate a secure JWT secret:**
 

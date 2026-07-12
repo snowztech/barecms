@@ -1,6 +1,10 @@
 package storage
 
-import "gorm.io/datatypes"
+import (
+	"time"
+
+	"gorm.io/datatypes"
+)
 
 type SiteDB struct {
 	ID     string `gorm:"primaryKey"`
@@ -42,6 +46,18 @@ type UserDB struct {
 	Username string `gorm:"uniqueIndex;not null"`
 	Password string `gorm:"not null"`
 }
+
+type MediaFileDB struct {
+	ID           string    `gorm:"primaryKey"`
+	SiteID       string    `gorm:"not null;index"`
+	StoredName   string    `gorm:"not null;uniqueIndex"`
+	OriginalName string    `gorm:"not null"`
+	MIMEType     string    `gorm:"not null"`
+	Size         int64     `gorm:"not null"`
+	CreatedAt    time.Time `gorm:"autoCreateTime"`
+}
+
+func (MediaFileDB) TableName() string { return "media_files" }
 
 func (UserDB) TableName() string {
 	return "users"

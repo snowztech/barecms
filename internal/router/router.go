@@ -38,6 +38,7 @@ func Setup(service *services.Service, config configs.AppConfig) *echo.Echo {
 
 	// Public site data endpoint
 	api.GET("/:siteSlug/data", h.GetSiteData)
+	api.GET("/files/:fileId", h.GetMedia)
 
 	// Auth routes (public)
 	authRateLimiter := middleware.RateLimiter(middleware.NewRateLimiterMemoryStoreWithConfig(
@@ -64,6 +65,9 @@ func Setup(service *services.Service, config configs.AppConfig) *echo.Echo {
 	protected.GET("/sites/:id/collections", h.GetSiteWithCollections)
 	protected.POST("/sites", h.CreateSite)
 	protected.DELETE("/sites/:id", h.DeleteSite)
+	protected.GET("/sites/:siteId/files", h.ListMedia)
+	protected.POST("/sites/:siteId/files", h.UploadMedia)
+	protected.DELETE("/files/:fileId", h.DeleteMedia)
 
 	// Collections routes
 	protected.POST("/collections", h.CreateCollection)

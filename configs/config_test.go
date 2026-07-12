@@ -8,6 +8,8 @@ func TestValidateRejectsInsecureProductionSecret(t *testing.T) {
 		JWTSecret:              DefaultJWTSecret,
 		MaxRequestBody:         "2M",
 		AuthRateLimitPerMinute: 10,
+		UploadsDir:             "uploads",
+		MaxFileSize:            1024,
 	}
 
 	if err := config.Validate(); err == nil {
@@ -21,6 +23,8 @@ func TestValidateAcceptsSecureProductionConfig(t *testing.T) {
 		JWTSecret:              "a-secure-secret-with-at-least-32-characters",
 		MaxRequestBody:         "2M",
 		AuthRateLimitPerMinute: 10,
+		UploadsDir:             "uploads",
+		MaxFileSize:            1024,
 	}
 
 	if err := config.Validate(); err != nil {
@@ -30,8 +34,10 @@ func TestValidateAcceptsSecureProductionConfig(t *testing.T) {
 
 func TestValidateRejectsInvalidLimits(t *testing.T) {
 	tests := []AppConfig{
-		{Env: "dev", MaxRequestBody: "", AuthRateLimitPerMinute: 10},
-		{Env: "dev", MaxRequestBody: "2M", AuthRateLimitPerMinute: 0},
+		{Env: "dev", MaxRequestBody: "", AuthRateLimitPerMinute: 10, UploadsDir: "uploads", MaxFileSize: 1024},
+		{Env: "dev", MaxRequestBody: "2M", AuthRateLimitPerMinute: 0, UploadsDir: "uploads", MaxFileSize: 1024},
+		{Env: "dev", MaxRequestBody: "2M", AuthRateLimitPerMinute: 10, UploadsDir: "", MaxFileSize: 1024},
+		{Env: "dev", MaxRequestBody: "2M", AuthRateLimitPerMinute: 10, UploadsDir: "uploads", MaxFileSize: 0},
 	}
 
 	for _, config := range tests {

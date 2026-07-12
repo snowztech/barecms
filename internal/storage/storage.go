@@ -31,7 +31,7 @@ func openDatabase(url string) (*gorm.DB, error) {
 	}
 
 	// Migrate the schema
-	if err := database.AutoMigrate(&SiteDB{}, &CollectionDB{}, &EntryDB{}, &UserDB{}); err != nil {
+	if err := database.AutoMigrate(&SiteDB{}, &CollectionDB{}, &EntryDB{}, &UserDB{}, &MediaFileDB{}); err != nil {
 		return nil, errors.Wrap(err, "failed to migrate database schema")
 	}
 

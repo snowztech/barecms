@@ -19,6 +19,8 @@ services:
     ports:
       - "${PORT:-8080}:8080"
     env_file: .env
+    volumes:
+      - uploads_data:/app/uploads
 
     depends_on:
       postgres:
@@ -27,3 +29,4 @@ services:
 
 volumes:
   postgres_data:
+  uploads_data:
