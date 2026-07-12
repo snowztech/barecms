@@ -8,8 +8,8 @@ import (
 	"fmt"
 )
 
-func (s *Service) GetSites() ([]models.Site, error) {
-	sitesDB, err := s.Storage.GetSites()
+func (s *Service) GetSites(userID string) ([]models.Site, error) {
+	sitesDB, err := s.Storage.GetSitesByUserID(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +23,10 @@ func (s *Service) GetSites() ([]models.Site, error) {
 	return sites, nil
 }
 
-func (s *Service) GetSite(id string) (models.Site, error) {
+func (s *Service) GetSite(id, userID string) (models.Site, error) {
+	if err := s.requireSiteOwner(userID, id); err != nil {
+		return models.Site{}, err
+	}
 	siteDB, err := s.Storage.GetSite(id)
 	if err != nil {
 		return models.Site{}, err
@@ -33,15 +36,15 @@ func (s *Service) GetSite(id string) (models.Site, error) {
 	return site, nil
 }
 
-func (s *Service) GetSiteWithCollections(id string) (map[string]interface{}, error) {
+func (s *Service) GetSiteWithCollections(id, userID string) (map[string]interface{}, error) {
 	// Get site
-	site, err := s.GetSite(id)
+	site, err := s.GetSite(id, userID)
 	if err != nil {
 		return nil, err
 	}
 
 	// Get collections for this site
-	collections, err := s.GetCollectionsBySiteID(id)
+	collections, err := s.GetCollectionsBySiteID(id, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -52,12 +55,12 @@ func (s *Service) GetSiteWithCollections(id string) (map[string]interface{}, err
 	}, nil
 }
 
-func (s *Service) CreateSite(request models.CreateSiteRequest) error {
+func (s *Service) CreateSite(request models.CreateSiteRequest, userID string) error {
 	newSite := models.Site{
 		ID:     utils.GenerateUniqueID(),
 		Name:   request.Name,
 		Slug:   utils.Slugify(request.Name),
-		UserID: request.UserID,
+		UserID: userID,
 	}
 	siteDB := mapToSiteDB(newSite)
 	if err := s.Storage.CreateSite(siteDB); err != nil {
@@ -67,7 +70,10 @@ func (s *Service) CreateSite(request models.CreateSiteRequest) error {
 	return nil
 }
 
-func (s *Service) DeleteSite(id string) error {
+func (s *Service) DeleteSite(id, userID string) error {
+	if err := s.requireSiteOwner(userID, id); err != nil {
+		return err
+	}
 
 	if err := s.Storage.DeleteSite(id); err != nil {
 		return err

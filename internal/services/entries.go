@@ -9,7 +9,10 @@ import (
 	"gorm.io/datatypes"
 )
 
-func (s *Service) CreateEntry(request *models.CreateEntryRequest) error {
+func (s *Service) CreateEntry(request *models.CreateEntryRequest, userID string) error {
+	if err := s.requireCollectionOwner(userID, request.CollectionID); err != nil {
+		return err
+	}
 	entry := models.Entry{
 		ID:           utils.GenerateUniqueID(),
 		CollectionID: request.CollectionID,
@@ -24,7 +27,10 @@ func (s *Service) CreateEntry(request *models.CreateEntryRequest) error {
 	return nil
 }
 
-func (s *Service) GetEntryByID(id string) (models.Entry, error) {
+func (s *Service) GetEntryByID(id, userID string) (models.Entry, error) {
+	if err := s.requireEntryOwner(userID, id); err != nil {
+		return models.Entry{}, err
+	}
 	entryDB, err := s.Storage.GetEntryByID(id)
 	if err != nil {
 		return models.Entry{}, err
@@ -32,7 +38,10 @@ func (s *Service) GetEntryByID(id string) (models.Entry, error) {
 	return mapToEntry(entryDB), nil
 }
 
-func (s *Service) GetEntriesByCollectionID(collectionID string) ([]models.Entry, error) {
+func (s *Service) GetEntriesByCollectionID(collectionID, userID string) ([]models.Entry, error) {
+	if err := s.requireCollectionOwner(userID, collectionID); err != nil {
+		return nil, err
+	}
 	entriesDB, err := s.Storage.GetEntriesByCollectionID(collectionID)
 	if err != nil {
 		return nil, err
@@ -44,7 +53,10 @@ func (s *Service) GetEntriesByCollectionID(collectionID string) ([]models.Entry,
 	return entries, nil
 }
 
-func (s *Service) DeleteEntry(id string) error {
+func (s *Service) DeleteEntry(id, userID string) error {
+	if err := s.requireEntryOwner(userID, id); err != nil {
+		return err
+	}
 	return s.Storage.DeleteEntry(id)
 }
 
