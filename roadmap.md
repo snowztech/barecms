@@ -15,6 +15,16 @@ What works today:
 
 The basics every CMS needs. Without these, MCP positioning means nothing.
 
+### Security and tenant isolation
+
+- [x] **Tenant authorization implementation** (`security/tenant-authorization`)
+  - Scope site listings to the authenticated user
+  - Bind newly created sites to the JWT identity
+  - Enforce ownership through site, collection, and entry relationships
+- [x] Add cross-tenant authorization regression tests
+- [ ] Reject insecure default secrets in production
+- [ ] Add authentication rate limiting and request size limits
+
 - [ ] **Local file and image storage** (critical)
   - Upload and serving endpoints
   - Files table tracking size and MIME type
