@@ -103,6 +103,35 @@ This simple structure makes it easy to consume in frontend applications - you ca
 
 ---
 
+## Media files
+
+Uploaded media is owned by a site. Management endpoints require authentication
+and site ownership. JPEG, PNG, GIF, WebP, and PDF files are accepted.
+
+### Upload a file
+
+`POST /api/sites/:siteId/files` using a multipart form field named `file`.
+
+```bash
+curl -X POST http://localhost:8080/api/sites/site123/files \
+  -H "Authorization: Bearer <your-jwt-token>" \
+  -F "file=@image.png"
+```
+
+### List site files
+
+`GET /api/sites/:siteId/files`
+
+### Serve a file publicly
+
+`GET /api/files/:fileId`
+
+### Delete a file
+
+`DELETE /api/files/:fileId`
+
+Deleting a file requires authentication and ownership of its site.
+
 ## 🔐 Authentication Endpoints
 
 ### Register User

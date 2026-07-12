@@ -17,6 +17,8 @@ type AppConfig struct {
 	JWTSecret              string
 	MaxRequestBody         string
 	AuthRateLimitPerMinute int
+	UploadsDir             string
+	MaxFileSize            int64
 }
 
 const DefaultJWTSecret = "your-secret-key-change-this-in-production"
@@ -41,8 +43,10 @@ func LoadAppConfig() AppConfig {
 	cfg.Debug = getEnvBool("DEBUG", true)
 	cfg.DatabaseURL = getEnvString("DATABASE_URL", "postgresql://barecms_user:basercms_password@postgres:5432/barecms")
 	cfg.JWTSecret = getEnvString("JWT_SECRET", DefaultJWTSecret)
-	cfg.MaxRequestBody = getEnvString("MAX_REQUEST_BODY", "2M")
+	cfg.MaxRequestBody = getEnvString("MAX_REQUEST_BODY", "12M")
 	cfg.AuthRateLimitPerMinute = getEnvInt("AUTH_RATE_LIMIT_PER_MINUTE", 10)
+	cfg.UploadsDir = getEnvString("UPLOADS_DIR", "uploads")
+	cfg.MaxFileSize = getEnvInt64("MAX_FILE_SIZE", 10*1024*1024)
 
 	return cfg
 }
@@ -54,6 +58,12 @@ func (c AppConfig) Validate() error {
 	if strings.TrimSpace(c.MaxRequestBody) == "" {
 		return fmt.Errorf("MAX_REQUEST_BODY cannot be empty")
 	}
+	if strings.TrimSpace(c.UploadsDir) == "" {
+		return fmt.Errorf("UPLOADS_DIR cannot be empty")
+	}
+	if c.MaxFileSize < 1 {
+		return fmt.Errorf("MAX_FILE_SIZE must be at least 1")
+	}
 
 	env := strings.ToLower(strings.TrimSpace(c.Env))
 	if env == "prod" || env == "production" {
@@ -63,6 +73,13 @@ func (c AppConfig) Validate() error {
 	}
 
 	return nil
+}
+
+func getEnvInt64(key string, fallback int64) int64 {
+	if viper.IsSet(key) {
+		return viper.GetInt64(key)
+	}
+	return fallback
 }
 
 // Helper functions to get environment variables with fallbacks

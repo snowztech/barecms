@@ -15,6 +15,8 @@ func testConfig() configs.AppConfig {
 		JWTSecret:              "a-secure-secret-with-at-least-32-characters",
 		MaxRequestBody:         "16B",
 		AuthRateLimitPerMinute: 1,
+		UploadsDir:             "uploads",
+		MaxFileSize:            1024,
 	}
 }
 
