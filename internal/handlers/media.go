@@ -19,7 +19,7 @@ func (h *Handler) UploadMedia(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "could not read uploaded file")
 	}
-	defer source.Close()
+	defer func() { _ = source.Close() }()
 
 	file, err := h.Service.UploadMedia(siteID, currentUserID(c), header.Filename, source)
 	if err != nil {
