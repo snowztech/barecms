@@ -49,8 +49,9 @@ The basics every CMS needs. Without these, MCP positioning means nothing.
   - [x] Transactional site, collection, and account deletion (`reliability/database-integrity`)
   - [x] Cascade media metadata cleanup with best-effort disk cleanup
   - [x] Rollback regression coverage for failed destructive operations
-  - [ ] Versioned migrations and upgrade tests
-  - [ ] Scoped uniqueness and foreign-key constraints
+  - [x] Versioned migration ledger, idempotency, and legacy upgrade tests (`reliability/versioned-migrations`)
+  - [x] Collection slug uniqueness scoped to its site
+  - [ ] Foreign-key constraints
 - [ ] **UI polish**
   - Bug-free CRUD for every model
   - Loading, empty, and error states

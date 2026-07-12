@@ -84,6 +84,17 @@ BareCMS exposes two operational probes:
 The published container health check uses `/readyz`, so orchestrators do not
 route traffic to an instance while its database is unavailable.
 
+## Database upgrades
+
+BareCMS applies numbered database migrations during startup and records them in
+the `schema_migrations` table. Back up PostgreSQL and the uploads volume before
+upgrading. Never run two different BareCMS versions against the same database
+during an upgrade; update the application container, allow migrations to
+finish, confirm `/readyz`, and only then remove the previous image.
+
+Migration failures stop startup without recording the failed version. Restore
+the backup before downgrading because automatic down-migrations are not run.
+
 💡 **Generate a secure JWT secret:**
 
 ```bash
