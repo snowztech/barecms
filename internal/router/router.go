@@ -15,6 +15,7 @@ import (
 
 func Setup(service *services.Service, config configs.AppConfig) *echo.Echo {
 	r := echo.New()
+	r.HTTPErrorHandler = handlers.HTTPErrorHandler
 	r.Use(middleware.BodyLimit(config.MaxRequestBody))
 	r.Use(middleware.SecureWithConfig(securityHeaders(config)))
 

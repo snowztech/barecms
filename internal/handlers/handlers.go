@@ -15,6 +15,13 @@ func currentUserID(c echo.Context) string {
 }
 
 func serviceError(err error) error {
+	var validationError *services.ValidationError
+	if errors.As(err, &validationError) {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, echo.Map{"error": echo.Map{
+			"code": "validation_failed", "message": validationError.Error(), "fields": validationError.Fields,
+		},
+		})
+	}
 	if errors.Is(err, services.ErrForbidden) {
 		return echo.NewHTTPError(http.StatusForbidden, err.Error())
 	}

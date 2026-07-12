@@ -13,6 +13,14 @@ func (s *Service) CreateEntry(request *models.CreateEntryRequest, userID string)
 	if err := s.requireCollectionOwner(userID, request.CollectionID); err != nil {
 		return err
 	}
+	collectionDB, err := s.Storage.GetCollection(request.CollectionID)
+	if err != nil {
+		return err
+	}
+	collection := mapToCollection(collectionDB)
+	if err := validateEntryData(request.Data, collection.Fields); err != nil {
+		return err
+	}
 	entry := models.Entry{
 		ID:           utils.GenerateUniqueID(),
 		CollectionID: request.CollectionID,
