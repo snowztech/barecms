@@ -33,8 +33,9 @@ The basics every CMS needs. Without these, MCP positioning means nothing.
   - [x] Image upload and existing-media picker in the collection editor (`feature/media-picker-ui`)
   - [x] `UPLOADS_DIR` and `MAX_FILE_SIZE` environment variables
 - [ ] **Input validation and structured error responses**
-  - Required, type, and length checks at the model layer
-  - Consistent error JSON shape
+  - [x] Required, schema, primitive type, URL, and date checks for entries (`feature/entry-validation`)
+  - [x] Field-level `422 validation_failed` response shape
+  - [ ] Length and numeric range constraints in collection schemas
   - Frontend renders field-level errors
 - [ ] **API stability**
   - Lock response shapes for sites, collections, entries

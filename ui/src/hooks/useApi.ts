@@ -14,8 +14,11 @@ export const useApi = () => {
       const response = await apiClient(config);
       return response.data;
     } catch (err: any) {
+      const apiError = err.response?.data?.error;
       const errorMessage =
-        err.response?.data?.error || err.response?.data?.message || err.message;
+        (typeof apiError === "string" ? apiError : apiError?.message) ||
+        err.response?.data?.message ||
+        err.message;
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
