@@ -3,7 +3,6 @@ package services
 import (
 	"barecms/configs"
 	"barecms/internal/storage"
-	"fmt"
 )
 
 type Service struct {
@@ -11,10 +10,10 @@ type Service struct {
 	Config  configs.AppConfig
 }
 
-func NewService(config configs.AppConfig) *Service {
+func NewService(config configs.AppConfig) (*Service, error) {
 	storage, err := storage.NewStorage(config.DatabaseURL)
 	if err != nil {
-		fmt.Println("Failed to create storage:", err)
+		return nil, err
 	}
-	return &Service{Storage: storage, Config: config}
+	return &Service{Storage: storage, Config: config}, nil
 }

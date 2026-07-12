@@ -76,6 +76,14 @@ The Compose configuration mounts `/app/uploads` in a named `uploads_data`
 volume. Back up this volume together with PostgreSQL; database-only backups do
 not contain uploaded media.
 
+BareCMS exposes two operational probes:
+
+- `GET /healthz` confirms that the HTTP process is alive.
+- `GET /readyz` confirms that the process can reach PostgreSQL.
+
+The published container health check uses `/readyz`, so orchestrators do not
+route traffic to an instance while its database is unavailable.
+
 💡 **Generate a secure JWT secret:**
 
 ```bash

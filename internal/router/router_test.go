@@ -72,3 +72,21 @@ func TestAuthRateLimit(t *testing.T) {
 		t.Fatalf("expected second auth request to return 429, got %d", second.Code)
 	}
 }
+
+func TestReadinessFailsWithoutStorage(t *testing.T) {
+	router := Setup(nil, testConfig())
+	response := httptest.NewRecorder()
+	router.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/readyz", nil))
+	if response.Code != http.StatusServiceUnavailable {
+		t.Fatalf("expected 503, got %d", response.Code)
+	}
+}
+
+func TestLivenessDoesNotDependOnStorage(t *testing.T) {
+	router := Setup(nil, testConfig())
+	response := httptest.NewRecorder()
+	router.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/healthz", nil))
+	if response.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", response.Code)
+	}
+}

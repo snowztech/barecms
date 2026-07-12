@@ -27,7 +27,10 @@ func (app *App) setup() {
 	if err := cfg.Validate(); err != nil {
 		panic(fmt.Sprintf("Invalid configuration: %v", err))
 	}
-	svc := services.NewService(cfg)
+	svc, err := services.NewService(cfg)
+	if err != nil {
+		panic(fmt.Sprintf("Failed to initialize storage: %v", err))
+	}
 	r := router.Setup(svc, cfg)
 	app.router = r
 	app.cfg = cfg

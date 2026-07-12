@@ -44,6 +44,10 @@ curl -X GET http://localhost:8080/api/health
 }
 ```
 
+Operational deployments should use `GET /healthz` for process liveness and
+`GET /readyz` for traffic readiness. The readiness probe returns `503` while
+PostgreSQL is unavailable. `/api/health` remains available for compatibility.
+
 ### Get Site Data
 
 Retrieve all site content publicly without authentication. This is the primary endpoint for headless usage.

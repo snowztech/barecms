@@ -52,7 +52,8 @@ The basics every CMS needs. Without these, MCP positioning means nothing.
 - [ ] **Docker docs**
   - Document every environment variable
   - Provide `.env.production` example
-  - Add a `/healthz` endpoint
+  - [x] Add liveness `/healthz`, database readiness `/readyz`, and container health check (`reliability/health-readiness`)
+  - [x] Fail startup when database initialization fails
   - Slim final image with multi-stage build
 
 ## Phase 2. MCP-native pivot

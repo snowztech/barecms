@@ -3,8 +3,10 @@ package handlers
 import (
 	"barecms/configs"
 	"barecms/internal/services"
+	"context"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -39,4 +41,13 @@ func NewHandler(service *services.Service, config configs.AppConfig) *Handler {
 
 func (h *Handler) Health(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]string{"status": "up"})
+}
+
+func (h *Handler) Readiness(c echo.Context) error {
+	ctx, cancel := context.WithTimeout(c.Request().Context(), 2*time.Second)
+	defer cancel()
+	if h.Service == nil || h.Service.Storage == nil || h.Service.Storage.Ping(ctx) != nil {
+		return c.JSON(http.StatusServiceUnavailable, echo.Map{"status": "unavailable"})
+	}
+	return c.JSON(http.StatusOK, echo.Map{"status": "ready"})
 }
