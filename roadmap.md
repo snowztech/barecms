@@ -43,7 +43,8 @@ The basics every CMS needs. Without these, MCP positioning means nothing.
   - Frontend renders field-level errors
 - [ ] **API stability**
   - Lock response shapes for sites, collections, entries
-  - Pagination on list endpoints
+  - [x] Bounded pagination and metadata for collection entries (`feature/api-pagination`)
+  - [ ] Pagination on remaining authenticated list endpoints
 - [ ] **UI polish**
   - Bug-free CRUD for every model
   - Loading, empty, and error states

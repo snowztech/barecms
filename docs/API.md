@@ -138,6 +138,19 @@ Deleting a file requires authentication and ownership of its site.
 format as entry creation. The complete payload is validated against the
 collection schema before it replaces the existing entry data.
 
+### List collection entries
+
+`GET /api/collections/:collectionId/entries?page=1&limit=20` returns:
+
+```json
+{
+  "entries": [],
+  "pagination": { "page": 1, "limit": 20, "total": 0, "totalPages": 0 }
+}
+```
+
+`page` starts at 1 and `limit` is capped at 100.
+
 ## 🔐 Authentication Endpoints
 
 ### Register User
