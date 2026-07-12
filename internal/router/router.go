@@ -80,6 +80,7 @@ func Setup(service *services.Service, config configs.AppConfig) *echo.Echo {
 	// Entries routes
 	protected.POST("/entries", h.CreateEntry)
 	protected.GET("/entries/:id", h.GetEntry)
+	protected.PUT("/entries/:id", h.UpdateEntry)
 	protected.DELETE("/entries/:id", h.DeleteEntry)
 
 	return r

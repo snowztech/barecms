@@ -68,6 +68,28 @@ func (s *Service) DeleteEntry(id, userID string) error {
 	return s.Storage.DeleteEntry(id)
 }
 
+func (s *Service) UpdateEntry(id, userID string, request models.UpdateEntryRequest) (models.Entry, error) {
+	if err := s.requireEntryOwner(userID, id); err != nil {
+		return models.Entry{}, err
+	}
+	entryDB, err := s.Storage.GetEntryByID(id)
+	if err != nil {
+		return models.Entry{}, err
+	}
+	collectionDB, err := s.Storage.GetCollection(entryDB.CollectionID)
+	if err != nil {
+		return models.Entry{}, err
+	}
+	if err := validateEntryData(request.Data, mapToCollection(collectionDB).Fields); err != nil {
+		return models.Entry{}, err
+	}
+	if err := s.Storage.UpdateEntryData(id, request.Data); err != nil {
+		return models.Entry{}, err
+	}
+	entryDB.Data = datatypes.JSON(request.Data)
+	return mapToEntry(entryDB), nil
+}
+
 func mapToEntryDB(entry models.Entry) storage.EntryDB {
 	return storage.EntryDB{
 		ID:           entry.ID,

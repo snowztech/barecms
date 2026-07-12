@@ -132,6 +132,12 @@ curl -X POST http://localhost:8080/api/sites/site123/files \
 
 Deleting a file requires authentication and ownership of its site.
 
+### Update an entry
+
+`PUT /api/entries/:entryId` accepts a `data` object in the same typed field
+format as entry creation. The complete payload is validated against the
+collection schema before it replaces the existing entry data.
+
 ## 🔐 Authentication Endpoints
 
 ### Register User

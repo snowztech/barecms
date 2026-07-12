@@ -8,6 +8,8 @@ interface CreateEntryModalProps {
   siteId: string;
   fields: Field[];
   dialogRef: React.RefObject<HTMLDialogElement>;
+  entryId?: string;
+  initialData?: Record<string, { value: any; type: string }>;
 }
 
 const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
@@ -15,6 +17,8 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
   siteId,
   fields,
   dialogRef,
+  entryId,
+  initialData,
 }) => {
   const [formState, setFormState] = useState<Record<string, any>>({});
   const [error, setError] = useState<string | null>(null);
@@ -31,13 +35,13 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
     const initialFormState: Record<string, any> = {};
     fields.forEach((field) => {
       if (field.type === FieldType.BOOLEAN) {
-        initialFormState[field.name] = "false";
+        initialFormState[field.name] = initialData?.[field.name]?.value ?? "false";
       } else {
-        initialFormState[field.name] = "";
+        initialFormState[field.name] = initialData?.[field.name]?.value ?? "";
       }
     });
     setFormState(initialFormState);
-  }, [fields]);
+  }, [fields, initialData]);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -49,13 +53,9 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
   };
 
   const handleSubmit = async () => {
-    console.log("fields", fields);
-
     const hasRequiredFields = fields.some(
       (field) => !field.optional && formState[field.name].trim() === "",
     );
-
-    console.log("hasEmptyFields", hasRequiredFields);
 
     if (hasRequiredFields) {
       setError("All fields are required.");
@@ -67,8 +67,8 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
       // Prepare data with types
       const dataWithTypes = fields.reduce(
         (acc, field) => {
-          let value = formState[field.name]
-          if (field.optional && value.trim() === "") value = null
+          let value = formState[field.name];
+          if (field.optional && value.trim() === "") value = null;
           acc[field.name] = {
             value,
             type: field.type,
@@ -79,12 +79,11 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
       );
 
       await request({
-        url: "/entries",
-        method: "POST",
-        data: { collectionId, data: dataWithTypes },
+        url: entryId ? `/entries/${entryId}` : "/entries",
+        method: entryId ? "PUT" : "POST",
+        data: entryId ? { data: dataWithTypes } : { collectionId, data: dataWithTypes },
       });
 
-      console.log("Entry created successfully");
       closeDialog();
       setTimeout(() => {
         window.location.reload();
@@ -154,7 +153,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             className="select select-bordered w-full"
             required={!field.optional}
           >
-            <option disabled selected>
+            <option disabled>
               Select an option
             </option>
             <option value="true">True</option>
@@ -202,7 +201,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
   return (
     <dialog className="modal" ref={dialogRef}>
       <div className="modal-box">
-        <h3 className="font-bold text-lg mb-3">Create new entry</h3>
+        <h3 className="font-bold text-lg mb-3">{entryId ? "Edit entry" : "Create new entry"}</h3>
         {error && <p className="text-red-500 mb-4">{error}</p>}
         <div className="mt-4">
           {fields.map((field) => (
@@ -223,7 +222,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             onClick={handleSubmit}
             className="btn btn-primary"
           >
-            {loading ? "Creating..." : "Create"}
+            {loading ? "Saving..." : entryId ? "Save changes" : "Create"}
           </button>
           <button className="btn" onClick={closeDialog}>
             Cancel
