@@ -45,6 +45,12 @@ The basics every CMS needs. Without these, MCP positioning means nothing.
   - Lock response shapes for sites, collections, entries
   - [x] Bounded pagination and metadata for collection entries (`feature/api-pagination`)
   - [ ] Pagination on remaining authenticated list endpoints
+- [ ] **Database integrity and migrations**
+  - [x] Transactional site, collection, and account deletion (`reliability/database-integrity`)
+  - [x] Cascade media metadata cleanup with best-effort disk cleanup
+  - [x] Rollback regression coverage for failed destructive operations
+  - [ ] Versioned migrations and upgrade tests
+  - [ ] Scoped uniqueness and foreign-key constraints
 - [ ] **UI polish**
   - Bug-free CRUD for every model
   - Loading, empty, and error states

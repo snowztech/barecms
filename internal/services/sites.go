@@ -6,6 +6,9 @@ import (
 	"barecms/internal/utils"
 	"encoding/json"
 	"fmt"
+	"log/slog"
+	"os"
+	"path/filepath"
 )
 
 func (s *Service) GetSites(userID string) ([]models.Site, error) {
@@ -75,28 +78,14 @@ func (s *Service) DeleteSite(id, userID string) error {
 		return err
 	}
 
-	if err := s.Storage.DeleteSite(id); err != nil {
-		return err
-	}
-
-	// Delete collections associated with the site ID
-	siteCollections, err := s.Storage.GetCollectionsBySiteID(id)
+	media, err := s.Storage.DeleteSiteCascade(id)
 	if err != nil {
 		return err
 	}
-	var collectionIds []string
-	for _, collection := range siteCollections {
-		collectionIds = append(collectionIds, collection.ID)
-	}
-
-	// Delete entries associated with the collection IDs
-	if err := s.Storage.DeleteEntriesByCollectionIDs(collectionIds); err != nil {
-		return err
-	}
-
-	// Delete collections
-	if err := s.Storage.DeleteCollectionsBySiteID(id); err != nil {
-		return err
+	for _, file := range media {
+		if err := os.Remove(filepath.Join(s.Config.UploadsDir, file.StoredName)); err != nil && !os.IsNotExist(err) {
+			slog.Warn("Could not remove deleted site's media file", "file", file.StoredName, "error", err)
+		}
 	}
 	return nil
 }
