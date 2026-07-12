@@ -1,19 +1,25 @@
 package configs
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
+	"strings"
 
 	"github.com/spf13/viper"
 )
 
 type AppConfig struct {
-	Env         string
-	Debug       bool
-	Port        int
-	DatabaseURL string
-	JWTSecret   string
+	Env                    string
+	Debug                  bool
+	Port                   int
+	DatabaseURL            string
+	JWTSecret              string
+	MaxRequestBody         string
+	AuthRateLimitPerMinute int
 }
+
+const DefaultJWTSecret = "your-secret-key-change-this-in-production"
 
 func LoadAppConfig() AppConfig {
 	viper.SetConfigFile(".env")
@@ -34,9 +40,29 @@ func LoadAppConfig() AppConfig {
 	cfg.Port = getEnvInt("PORT", 8080)
 	cfg.Debug = getEnvBool("DEBUG", true)
 	cfg.DatabaseURL = getEnvString("DATABASE_URL", "postgresql://barecms_user:basercms_password@postgres:5432/barecms")
-	cfg.JWTSecret = getEnvString("JWT_SECRET", "your-secret-key-change-this-in-production")
+	cfg.JWTSecret = getEnvString("JWT_SECRET", DefaultJWTSecret)
+	cfg.MaxRequestBody = getEnvString("MAX_REQUEST_BODY", "2M")
+	cfg.AuthRateLimitPerMinute = getEnvInt("AUTH_RATE_LIMIT_PER_MINUTE", 10)
 
 	return cfg
+}
+
+func (c AppConfig) Validate() error {
+	if c.AuthRateLimitPerMinute < 1 {
+		return fmt.Errorf("AUTH_RATE_LIMIT_PER_MINUTE must be at least 1")
+	}
+	if strings.TrimSpace(c.MaxRequestBody) == "" {
+		return fmt.Errorf("MAX_REQUEST_BODY cannot be empty")
+	}
+
+	env := strings.ToLower(strings.TrimSpace(c.Env))
+	if env == "prod" || env == "production" {
+		if c.JWTSecret == DefaultJWTSecret || len(c.JWTSecret) < 32 {
+			return fmt.Errorf("JWT_SECRET must be changed and contain at least 32 characters in production")
+		}
+	}
+
+	return nil
 }
 
 // Helper functions to get environment variables with fallbacks

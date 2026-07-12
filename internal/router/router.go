@@ -6,13 +6,17 @@ import (
 	"barecms/internal/middlewares"
 	"barecms/internal/services"
 	"barecms/ui"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"golang.org/x/time/rate"
 )
 
 func Setup(service *services.Service, config configs.AppConfig) *echo.Echo {
 	r := echo.New()
+	r.Use(middleware.BodyLimit(config.MaxRequestBody))
+	r.Use(middleware.SecureWithConfig(securityHeaders(config)))
 
 	if config.Env == "dev" {
 		r.Use(middleware.CORSWithConfig(middleware.CORSConfig{
@@ -36,8 +40,15 @@ func Setup(service *services.Service, config configs.AppConfig) *echo.Echo {
 	api.GET("/:siteSlug/data", h.GetSiteData)
 
 	// Auth routes (public)
-	api.POST("/auth/register", h.Register)
-	api.POST("/auth/login", h.Login)
+	authRateLimiter := middleware.RateLimiter(middleware.NewRateLimiterMemoryStoreWithConfig(
+		middleware.RateLimiterMemoryStoreConfig{
+			Rate:      rate.Limit(float64(config.AuthRateLimitPerMinute) / 60),
+			Burst:     config.AuthRateLimitPerMinute,
+			ExpiresIn: 5 * time.Minute,
+		},
+	))
+	api.POST("/auth/register", h.Register, authRateLimiter)
+	api.POST("/auth/login", h.Login, authRateLimiter)
 
 	// Protected routes
 	protected := api.Group("")
@@ -67,4 +78,15 @@ func Setup(service *services.Service, config configs.AppConfig) *echo.Echo {
 	protected.DELETE("/entries/:id", h.DeleteEntry)
 
 	return r
+}
+
+func securityHeaders(config configs.AppConfig) middleware.SecureConfig {
+	secure := middleware.DefaultSecureConfig
+	secure.XFrameOptions = "DENY"
+	secure.ContentTypeNosniff = "nosniff"
+	secure.ReferrerPolicy = "strict-origin-when-cross-origin"
+	if config.Env == "prod" || config.Env == "production" {
+		secure.HSTSMaxAge = 31536000
+	}
+	return secure
 }
