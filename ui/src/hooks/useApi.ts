@@ -2,6 +2,16 @@ import { useCallback, useState } from "react";
 import apiClient from "@/lib/api";
 import { AxiosRequestConfig } from "axios";
 
+export class ApiRequestError extends Error {
+  fields: Record<string, string>;
+
+  constructor(message: string, fields: Record<string, string> = {}) {
+    super(message);
+    this.name = "ApiRequestError";
+    this.fields = fields;
+  }
+}
+
 export const useApi = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +30,7 @@ export const useApi = () => {
         err.response?.data?.message ||
         err.message;
       setError(errorMessage);
-      throw new Error(errorMessage);
+      throw new ApiRequestError(errorMessage, apiError?.fields || {});
     } finally {
       setLoading(false);
     }

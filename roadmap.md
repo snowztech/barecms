@@ -44,7 +44,7 @@ The basics every CMS needs. Without these, MCP positioning means nothing.
   - [x] Required, schema, primitive type, URL, and date checks for entries (`feature/entry-validation`)
   - [x] Field-level `422 validation_failed` response shape
   - [ ] Length and numeric range constraints in collection schemas
-  - Frontend renders field-level errors
+  - [x] Frontend renders accessible field-level errors (`feature/field-validation-ui`)
 - [ ] **API stability**
   - Lock response shapes for sites, collections, entries
   - [x] Bounded pagination and metadata for collection entries (`feature/api-pagination`)

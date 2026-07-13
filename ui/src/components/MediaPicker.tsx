@@ -7,6 +7,8 @@ interface MediaPickerProps {
   value: string;
   onChange: (url: string) => void;
   required?: boolean;
+  invalid?: boolean;
+  ariaDescribedBy?: string;
 }
 
 const MediaPicker: React.FC<MediaPickerProps> = ({
@@ -14,6 +16,8 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
   value,
   onChange,
   required,
+  invalid,
+  ariaDescribedBy,
 }) => {
   const [files, setFiles] = useState<MediaFile[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -114,7 +118,14 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
         </div>
       )}
 
-      <input type="hidden" value={value} required={required} readOnly />
+      <input
+        type="hidden"
+        value={value}
+        required={required}
+        readOnly
+        aria-invalid={invalid}
+        aria-describedby={ariaDescribedBy}
+      />
     </div>
   );
 };
