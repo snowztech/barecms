@@ -50,6 +50,16 @@ func (s *Storage) GetCollectionsBySiteID(siteID string) ([]CollectionDB, error) 
 	return collections, nil
 }
 
+func (s *Storage) GetCollectionsPage(siteID string, limit, offset int) ([]CollectionDB, int64, error) {
+	var total int64
+	if err := s.DB.Model(&CollectionDB{}).Where("site_id = ?", siteID).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+	var collections []CollectionDB
+	err := s.DB.Where("site_id = ?", siteID).Order("id ASC").Limit(limit).Offset(offset).Find(&collections).Error
+	return collections, total, err
+}
+
 func (s *Storage) DeleteCollection(id string) error {
 	tx := s.DB.Begin()
 	if tx.Error != nil {

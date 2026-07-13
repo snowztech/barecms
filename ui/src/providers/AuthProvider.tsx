@@ -3,6 +3,7 @@ import axios from "axios";
 import apiClient from "@/lib/api";
 import { AUTH_TOKEN_KEY, User } from "@/types/auth";
 import { AuthContext, AuthContextType } from "@/contexts/AuthContext";
+import { apiErrorMessage } from "@/hooks/useApi";
 
 interface AuthResponse {
   token?: string;
@@ -57,8 +58,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return { token, user };
     } catch (error: any) {
       setLoading(false);
-      const errorMessage =
-        error.response?.data?.error || "An error occurred. Please try again.";
+      const errorMessage = apiErrorMessage(error, "An error occurred. Please try again.");
       setError(errorMessage);
       return { error: errorMessage };
     }
@@ -86,8 +86,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return { token, user };
     } catch (err: any) {
       setLoading(false);
-      const errorMessage =
-        err.response?.data?.error || "An error occurred. Please try again.";
+      const errorMessage = apiErrorMessage(err, "An error occurred. Please try again.");
       setError(errorMessage);
       return { error: errorMessage };
     }

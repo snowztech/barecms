@@ -11,3 +11,8 @@ type MediaFile struct {
 	URL          string    `json:"url"`
 	CreatedAt    time.Time `json:"createdAt"`
 }
+
+type MediaFilePage struct {
+	Files      []MediaFile `json:"files"`
+	Pagination Pagination  `json:"pagination"`
+}

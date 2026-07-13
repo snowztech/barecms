@@ -35,11 +35,19 @@ func (h *Handler) UploadMedia(c echo.Context) error {
 }
 
 func (h *Handler) ListMedia(c echo.Context) error {
-	files, err := h.Service.ListMedia(c.Param("siteId"), currentUserID(c))
+	page, err := paginationParameter("page", c.QueryParam("page"), 1, 1, 0)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	limit, err := paginationParameter("limit", c.QueryParam("limit"), 50, 1, 100)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	files, err := h.Service.ListMediaPage(c.Param("siteId"), currentUserID(c), page, limit)
 	if err != nil {
 		return serviceError(err)
 	}
-	return c.JSON(http.StatusOK, map[string]any{"files": files})
+	return c.JSON(http.StatusOK, files)
 }
 
 func (h *Handler) GetMedia(c echo.Context) error {

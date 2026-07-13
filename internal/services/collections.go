@@ -91,6 +91,21 @@ func (s *Service) GetCollectionsBySiteID(siteID, userID string) ([]models.Collec
 
 }
 
+func (s *Service) GetCollectionsPage(siteID, userID string, page, limit int) (models.CollectionPage, error) {
+	if err := s.requireSiteOwner(userID, siteID); err != nil {
+		return models.CollectionPage{}, err
+	}
+	collectionsDB, total, err := s.Storage.GetCollectionsPage(siteID, limit, (page-1)*limit)
+	if err != nil {
+		return models.CollectionPage{}, err
+	}
+	collections := make([]models.Collection, len(collectionsDB))
+	for index, collection := range collectionsDB {
+		collections[index] = mapToCollection(collection)
+	}
+	return models.CollectionPage{Collections: collections, Pagination: pagination(total, page, limit)}, nil
+}
+
 func (s *Service) DeleteCollection(collectionID, userID string) error {
 	if err := s.requireCollectionOwner(userID, collectionID); err != nil {
 		return err

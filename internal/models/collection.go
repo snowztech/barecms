@@ -19,3 +19,8 @@ type UpdateCollectionRequest struct {
 	Name   string  `json:"name"`
 	Fields []Field `json:"fields"`
 }
+
+type CollectionPage struct {
+	Collections []Collection `json:"collections"`
+	Pagination  Pagination   `json:"pagination"`
+}

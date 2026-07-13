@@ -27,6 +27,18 @@ func (s *Service) GetSites(userID string) ([]models.Site, error) {
 	return sites, nil
 }
 
+func (s *Service) GetSitesPage(userID string, page, limit int) (models.SitePage, error) {
+	sitesDB, total, err := s.Storage.GetSitesPage(userID, limit, (page-1)*limit)
+	if err != nil {
+		return models.SitePage{}, err
+	}
+	sites := make([]models.Site, len(sitesDB))
+	for index, site := range sitesDB {
+		sites[index] = mapToSite(site)
+	}
+	return models.SitePage{Sites: sites, Pagination: pagination(total, page, limit)}, nil
+}
+
 func (s *Service) GetSite(id, userID string) (models.Site, error) {
 	if err := s.requireSiteOwner(userID, id); err != nil {
 		return models.Site{}, err

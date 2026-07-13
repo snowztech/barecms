@@ -170,6 +170,10 @@ collection schema before it replaces the existing entry data.
 
 `page` starts at 1 and `limit` is capped at 100.
 
+Authenticated site, collection, and media lists use the same `page`/`limit`
+parameters and `{ resource, pagination }` envelope. Site and collection lists
+default to 20 items; media defaults to 50. All limits are capped at 100.
+
 ### Update a site
 
 `PUT /api/sites/:siteId` accepts `{ "name": "New name" }`. The public slug is

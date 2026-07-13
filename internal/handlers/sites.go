@@ -8,12 +8,20 @@ import (
 )
 
 func (h *Handler) GetSites(c echo.Context) error {
-	sites, err := h.Service.GetSites(currentUserID(c))
+	page, err := paginationParameter("page", c.QueryParam("page"), 1, 1, 0)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	limit, err := paginationParameter("limit", c.QueryParam("limit"), 20, 1, 100)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	sites, err := h.Service.GetSitesPage(currentUserID(c), page, limit)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, map[string][]models.Site{"sites": sites})
+	return c.JSON(http.StatusOK, sites)
 }
 
 func (h *Handler) GetSite(c echo.Context) error {
