@@ -85,6 +85,16 @@ func (s *Storage) GetSitesByUserID(userID string) ([]SiteDB, error) {
 	return sites, nil
 }
 
+func (s *Storage) GetSitesPage(userID string, limit, offset int) ([]SiteDB, int64, error) {
+	var total int64
+	if err := s.DB.Model(&SiteDB{}).Where("user_id = ?", userID).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+	var sites []SiteDB
+	err := s.DB.Where("user_id = ?", userID).Order("id ASC").Limit(limit).Offset(offset).Find(&sites).Error
+	return sites, total, err
+}
+
 func (s *Storage) UserOwnsSite(userID, siteID string) (bool, error) {
 	var count int64
 	err := s.DB.Model(&SiteDB{}).

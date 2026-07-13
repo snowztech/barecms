@@ -35,13 +35,20 @@ func (h *Handler) GetCollection(c echo.Context) error {
 
 func (h *Handler) GetCollectionsBySiteID(c echo.Context) error {
 	siteID := c.Param("id")
-
-	collections, err := h.Service.GetCollectionsBySiteID(siteID, currentUserID(c))
+	page, err := paginationParameter("page", c.QueryParam("page"), 1, 1, 0)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	limit, err := paginationParameter("limit", c.QueryParam("limit"), 20, 1, 100)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	collections, err := h.Service.GetCollectionsPage(siteID, currentUserID(c), page, limit)
 	if err != nil {
 		return serviceError(err)
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"collections": collections})
+	return c.JSON(http.StatusOK, collections)
 }
 
 func (h *Handler) DeleteCollection(c echo.Context) error {

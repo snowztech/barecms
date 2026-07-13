@@ -12,6 +12,11 @@ export class ApiRequestError extends Error {
   }
 }
 
+export const apiErrorMessage = (error: any, fallback: string) => {
+  const apiError = error.response?.data?.error;
+  return (typeof apiError === "string" ? apiError : apiError?.message) || error.message || fallback;
+};
+
 export const useApi = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,10 +30,7 @@ export const useApi = () => {
       return response.data;
     } catch (err: any) {
       const apiError = err.response?.data?.error;
-      const errorMessage =
-        (typeof apiError === "string" ? apiError : apiError?.message) ||
-        err.response?.data?.message ||
-        err.message;
+      const errorMessage = apiErrorMessage(err, "Request failed");
       setError(errorMessage);
       throw new ApiRequestError(errorMessage, apiError?.fields || {});
     } finally {

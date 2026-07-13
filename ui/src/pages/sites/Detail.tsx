@@ -9,7 +9,7 @@ import CreateSiteModal from "@/components/modals/CreateSiteModal";
 
 const SiteDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { site, collections, loading, error } = useSiteDetail(id);
+  const { site, collections, pagination, setPage, loading, error } = useSiteDetail(id);
   const { isDeleting, handleDelete } = useDelete(`/sites/${id || ""}`, "/");
 
   const collectionModalRef = useRef<HTMLDialogElement>(null);
@@ -193,6 +193,13 @@ const SiteDetailsPage: React.FC = () => {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+        {pagination.totalPages > 1 && (
+          <div className="flex items-center justify-center gap-3 pt-4">
+            <button className="btn btn-sm" disabled={pagination.page <= 1} onClick={() => setPage(pagination.page - 1)}>Previous</button>
+            <span className="text-sm text-bare-600">Page {pagination.page} of {pagination.totalPages} · {pagination.total} collections</span>
+            <button className="btn btn-sm" disabled={pagination.page >= pagination.totalPages} onClick={() => setPage(pagination.page + 1)}>Next</button>
           </div>
         )}
       </div>

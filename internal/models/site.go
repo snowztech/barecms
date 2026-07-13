@@ -22,3 +22,8 @@ type SiteData struct {
 	Slug string                 `json:"slug"`
 	Data map[string]interface{} `json:"data"`
 }
+
+type SitePage struct {
+	Sites      []Site     `json:"sites"`
+	Pagination Pagination `json:"pagination"`
+}

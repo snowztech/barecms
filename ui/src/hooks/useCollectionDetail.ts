@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import apiClient from "@/lib/api";
 import { Collection, Entry, Pagination, Site } from "@/types";
+import { apiErrorMessage } from "@/hooks/useApi";
 
 interface CollectionDetailData {
   collection: Collection;
@@ -44,7 +45,7 @@ export function useCollectionDetail(
           site: siteResponse.data.site
         });
       } catch (err: any) {
-        setError(err.response?.data?.error || 'Failed to fetch collection details');
+        setError(apiErrorMessage(err, "Failed to fetch collection details"));
       } finally {
         setLoading(false);
       }

@@ -81,6 +81,21 @@ func (s *Service) ListMedia(siteID, userID string) ([]models.MediaFile, error) {
 	return files, nil
 }
 
+func (s *Service) ListMediaPage(siteID, userID string, page, limit int) (models.MediaFilePage, error) {
+	if err := s.requireSiteOwner(userID, siteID); err != nil {
+		return models.MediaFilePage{}, err
+	}
+	filesDB, total, err := s.Storage.GetMediaFilesPage(siteID, limit, (page-1)*limit)
+	if err != nil {
+		return models.MediaFilePage{}, err
+	}
+	files := make([]models.MediaFile, len(filesDB))
+	for index, file := range filesDB {
+		files[index] = mapToMediaFile(file)
+	}
+	return models.MediaFilePage{Files: files, Pagination: pagination(total, page, limit)}, nil
+}
+
 func (s *Service) GetMedia(id string) (models.MediaFile, string, error) {
 	file, err := s.Storage.GetMediaFile(id)
 	if err != nil {

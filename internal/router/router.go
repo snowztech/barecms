@@ -67,7 +67,7 @@ func Setup(service *services.Service, config configs.AppConfig) *echo.Echo {
 	// Sites routes
 	protected.GET("/sites", h.GetSites)
 	protected.GET("/sites/:id", h.GetSite)
-	protected.GET("/sites/:id/collections", h.GetSiteWithCollections)
+	protected.GET("/sites/:id/collections", h.GetCollectionsBySiteID)
 	protected.POST("/sites", h.CreateSite)
 	protected.PUT("/sites/:id", h.UpdateSite)
 	protected.DELETE("/sites/:id", h.DeleteSite)

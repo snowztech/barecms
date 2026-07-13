@@ -21,17 +21,20 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
 }) => {
   const [files, setFiles] = useState<MediaFile[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const { request, loading } = useApi();
 
-  const loadFiles = useCallback(async () => {
+  const loadFiles = useCallback(async (requestedPage = 1) => {
     try {
-      const response = await request({ url: `/sites/${siteId}/files` });
-      setFiles(
-        (response.files || []).filter((file: MediaFile) =>
+      const response = await request({ url: `/sites/${siteId}/files`, params: { page: requestedPage, limit: 50 } });
+      const images = (response.files || []).filter((file: MediaFile) =>
           file.mimeType.startsWith("image/"),
-        ),
-      );
+        );
+      setFiles((current) => requestedPage === 1 ? images : [...current, ...images]);
+      setPage(requestedPage);
+      setTotalPages(response.pagination?.totalPages || 0);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not load media");
@@ -39,7 +42,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
   }, [request, siteId]);
 
   useEffect(() => {
-    void loadFiles();
+    void loadFiles(1);
   }, [loadFiles]);
 
   const upload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,7 +101,7 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
         </div>
       )}
 
-      {files.length > 0 && (
+      {(files.length > 0 || page < totalPages) && (
         <div>
           <p className="mb-2 text-sm text-bare-600">Or choose an existing image</p>
           <div className="grid max-h-48 grid-cols-3 gap-2 overflow-y-auto">
@@ -115,6 +118,11 @@ const MediaPicker: React.FC<MediaPickerProps> = ({
               </button>
             ))}
           </div>
+          {page < totalPages && (
+            <button type="button" className="btn btn-sm mt-2 w-full" disabled={loading} onClick={() => void loadFiles(page + 1)}>
+              Load more
+            </button>
+          )}
         </div>
       )}
 
