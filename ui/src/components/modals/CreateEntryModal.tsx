@@ -115,6 +115,8 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             onChange={handleInputChange}
             className="input input-bordered w-full"
             required={!field.optional}
+            minLength={field.minLength}
+            maxLength={field.maxLength}
             {...accessibilityProps(field)}
           />
         );
@@ -128,6 +130,8 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             onChange={handleInputChange}
             className="input input-bordered w-full"
             required={!field.optional}
+            minLength={field.minLength}
+            maxLength={field.maxLength}
             {...accessibilityProps(field)}
           />
         );
@@ -140,6 +144,8 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             onChange={handleInputChange}
             className="textarea textarea-bordered w-full"
             required={!field.optional}
+            minLength={field.minLength}
+            maxLength={field.maxLength}
             {...accessibilityProps(field)}
           />
         );
@@ -153,6 +159,8 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             onChange={handleInputChange}
             className="input input-bordered w-full"
             required={!field.optional}
+            min={field.min}
+            max={field.max}
             {...accessibilityProps(field)}
           />
         );

@@ -22,6 +22,10 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
   const [newFieldName, setNewFieldName] = useState("");
   const [newFieldType, setNewFieldType] = useState<FieldType>(FieldType.STRING);
   const [newFieldOptional, setNewFieldOptional] = useState<boolean>(false)
+  const [newMinLength, setNewMinLength] = useState("");
+  const [newMaxLength, setNewMaxLength] = useState("");
+  const [newMin, setNewMin] = useState("");
+  const [newMax, setNewMax] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [fieldsError, setFieldsError] = useState<string | null>(null);
   const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
@@ -48,6 +52,14 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
     setNewFieldOptional(e.target.checked)
   }
 
+  const handleNewFieldTypeChange = (type: FieldType) => {
+    setNewFieldType(type);
+    setNewMinLength("");
+    setNewMaxLength("");
+    setNewMin("");
+    setNewMax("");
+  };
+
   const addField = () => {
     if (newFieldName.trim() === "") {
       setFieldsError("Field name cannot be empty.");
@@ -66,12 +78,20 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
       {
         name: newFieldName.trim().toLowerCase(),
         type: newFieldType,
-        optional: newFieldOptional
+        optional: newFieldOptional,
+        minLength: newMinLength === "" ? undefined : Number(newMinLength),
+        maxLength: newMaxLength === "" ? undefined : Number(newMaxLength),
+        min: newMin === "" ? undefined : Number(newMin),
+        max: newMax === "" ? undefined : Number(newMax),
       },
     ]);
     setNewFieldName("");
     setNewFieldType(FieldType.STRING);
     setNewFieldOptional(false);
+    setNewMinLength("");
+    setNewMaxLength("");
+    setNewMin("");
+    setNewMax("");
   };
 
   const removeField = (index: number) => {
@@ -148,6 +168,10 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
             <div key={index} className="flex items-center mb-2">
               <p className="mr-2">
                 {field.name} ({field.type}{field.optional && ', optional'})
+                {field.minLength !== undefined && ` · min ${field.minLength} chars`}
+                {field.maxLength !== undefined && ` · max ${field.maxLength} chars`}
+                {field.min !== undefined && ` · min ${field.min}`}
+                {field.max !== undefined && ` · max ${field.max}`}
               </p>
               {(serverErrors[`fields.${index}.name`] || serverErrors[`fields.${index}.type`]) && (
                 <p role="alert" className="text-sm text-error mr-2">
@@ -173,7 +197,7 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
             <select
               className="select select-bordered"
               value={newFieldType}
-              onChange={(e) => setNewFieldType(e.target.value as FieldType)}
+              onChange={(e) => handleNewFieldTypeChange(e.target.value as FieldType)}
             >
               {VALID_FIELD_TYPES.map((type: FieldType) => (
                 <option key={type} value={type}>
@@ -195,6 +219,18 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
             />
             Optional
           </label>
+          {[FieldType.STRING, FieldType.TEXT, FieldType.URL].includes(newFieldType) && (
+            <div className="grid grid-cols-2 gap-2 mb-2">
+              <input type="number" min="0" className="input input-bordered" placeholder="Min length" value={newMinLength} onChange={(event) => setNewMinLength(event.target.value)} />
+              <input type="number" min="0" className="input input-bordered" placeholder="Max length" value={newMaxLength} onChange={(event) => setNewMaxLength(event.target.value)} />
+            </div>
+          )}
+          {newFieldType === FieldType.NUMBER && (
+            <div className="grid grid-cols-2 gap-2 mb-2">
+              <input type="number" className="input input-bordered" placeholder="Minimum" value={newMin} onChange={(event) => setNewMin(event.target.value)} />
+              <input type="number" className="input input-bordered" placeholder="Maximum" value={newMax} onChange={(event) => setNewMax(event.target.value)} />
+            </div>
+          )}
         </div>
         {fieldsError && <p className="text-red-500 mt-2">{fieldsError}</p>}
         {serverErrors.fields && <p role="alert" className="text-sm text-error mt-2">{serverErrors.fields}</p>}

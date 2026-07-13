@@ -4,6 +4,7 @@ import (
 	"barecms/internal/models"
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/url"
 	"strconv"
 	"strings"
@@ -41,7 +42,7 @@ func validateEntryData(data json.RawMessage, fields []models.Field) error {
 			errors[field.Name] = "type does not match collection schema"
 			continue
 		}
-		if message := validateFieldValue(field.Type, value.Value); message != "" {
+		if message := validateFieldValue(field, value.Value); message != "" {
 			errors[field.Name] = message
 		}
 	}
@@ -56,15 +57,22 @@ func validateEntryData(data json.RawMessage, fields []models.Field) error {
 	return nil
 }
 
-func validateFieldValue(fieldType models.FieldType, value any) string {
+func validateFieldValue(field models.Field, value any) string {
 	text, ok := value.(string)
 	if !ok {
 		return "must be a string value"
 	}
-	switch fieldType {
+	switch field.Type {
 	case models.FieldTypeNumber:
-		if _, err := strconv.ParseFloat(text, 64); err != nil {
+		number, err := strconv.ParseFloat(text, 64)
+		if err != nil || math.IsNaN(number) || math.IsInf(number, 0) {
 			return "must be a number"
+		}
+		if field.Min != nil && number < *field.Min {
+			return fmt.Sprintf("must be at least %g", *field.Min)
+		}
+		if field.Max != nil && number > *field.Max {
+			return fmt.Sprintf("must be at most %g", *field.Max)
 		}
 	case models.FieldTypeBoolean:
 		if _, err := strconv.ParseBool(text); err != nil {
@@ -79,6 +87,12 @@ func validateFieldValue(fieldType models.FieldType, value any) string {
 		if err != nil || (parsed.Scheme != "" && parsed.Scheme != "http" && parsed.Scheme != "https") {
 			return "must be a valid URL"
 		}
+	}
+	if field.MinLength != nil && len([]rune(text)) < *field.MinLength {
+		return fmt.Sprintf("must contain at least %d characters", *field.MinLength)
+	}
+	if field.MaxLength != nil && len([]rune(text)) > *field.MaxLength {
+		return fmt.Sprintf("must contain at most %d characters", *field.MaxLength)
 	}
 	return ""
 }
@@ -103,6 +117,25 @@ func validateCollectionSchema(name string, fields []models.Field) error {
 		seen[fieldName] = true
 		if !models.IsValidFieldType(string(field.Type)) {
 			problems[key+".type"] = "is invalid"
+		}
+		stringLike := field.Type == models.FieldTypeString || field.Type == models.FieldTypeText || field.Type == models.FieldTypeURL
+		if (field.MinLength != nil || field.MaxLength != nil) && !stringLike {
+			problems[key+".length"] = "is only supported for string, text, and URL fields"
+		}
+		if field.MinLength != nil && *field.MinLength < 0 {
+			problems[key+".minLength"] = "must be zero or greater"
+		}
+		if field.MaxLength != nil && *field.MaxLength < 0 {
+			problems[key+".maxLength"] = "must be zero or greater"
+		}
+		if field.MinLength != nil && field.MaxLength != nil && *field.MinLength > *field.MaxLength {
+			problems[key+".maxLength"] = "must be greater than or equal to minLength"
+		}
+		if (field.Min != nil || field.Max != nil) && field.Type != models.FieldTypeNumber {
+			problems[key+".range"] = "is only supported for number fields"
+		}
+		if field.Min != nil && field.Max != nil && *field.Min > *field.Max {
+			problems[key+".max"] = "must be greater than or equal to min"
 		}
 	}
 	if len(problems) > 0 {

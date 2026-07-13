@@ -16,4 +16,8 @@ export interface Field {
   name: string;
   type: FieldType;
   optional?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  min?: number;
+  max?: number;
 }

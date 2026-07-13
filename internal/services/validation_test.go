@@ -48,3 +48,40 @@ func TestValidateCollectionSchemaRejectsInvalidDefinitions(t *testing.T) {
 		}
 	}
 }
+
+func TestValidateEntryDataEnforcesLengthAndRangeConstraints(t *testing.T) {
+	minLength, maxLength := 3, 5
+	min, max := 1.0, 10.0
+	fields := []models.Field{
+		{Name: "title", Type: models.FieldTypeString, MinLength: &minLength, MaxLength: &maxLength},
+		{Name: "rating", Type: models.FieldTypeNumber, Min: &min, Max: &max},
+	}
+	invalid := json.RawMessage(`{"title":{"value":"ab","type":"string"},"rating":{"value":"11","type":"number"}}`)
+	var validationError *ValidationError
+	if !errors.As(validateEntryData(invalid, fields), &validationError) {
+		t.Fatal("expected constraint validation error")
+	}
+	if validationError.Fields["title"] == "" || validationError.Fields["rating"] == "" {
+		t.Fatalf("missing constraint errors: %+v", validationError.Fields)
+	}
+	valid := json.RawMessage(`{"title":{"value":"hello","type":"string"},"rating":{"value":"10","type":"number"}}`)
+	if err := validateEntryData(valid, fields); err != nil {
+		t.Fatalf("valid constrained entry rejected: %v", err)
+	}
+}
+
+func TestValidateCollectionSchemaRejectsInvalidConstraints(t *testing.T) {
+	minLength, maxLength := 5, 2
+	min, max := 10.0, 1.0
+	err := validateCollectionSchema("Posts", []models.Field{
+		{Name: "title", Type: models.FieldTypeString, MinLength: &minLength, MaxLength: &maxLength},
+		{Name: "rating", Type: models.FieldTypeNumber, Min: &min, Max: &max},
+	})
+	var validationError *ValidationError
+	if !errors.As(err, &validationError) {
+		t.Fatal("expected invalid constraints to be rejected")
+	}
+	if validationError.Fields["fields.0.maxLength"] == "" || validationError.Fields["fields.1.max"] == "" {
+		t.Fatalf("missing schema errors: %+v", validationError.Fields)
+	}
+}
