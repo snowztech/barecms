@@ -34,7 +34,11 @@ func IsValidFieldType(fieldType string) bool {
 }
 
 type Field struct {
-	Name     string    `json:"name"`
-	Type     FieldType `json:"type"`
-	Optional bool      `json:"optional,omitempty"`
+	Name      string    `json:"name"`
+	Type      FieldType `json:"type"`
+	Optional  bool      `json:"optional,omitempty"`
+	MinLength *int      `json:"minLength,omitempty"`
+	MaxLength *int      `json:"maxLength,omitempty"`
+	Min       *float64  `json:"min,omitempty"`
+	Max       *float64  `json:"max,omitempty"`
 }

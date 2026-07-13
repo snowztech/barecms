@@ -181,6 +181,14 @@ intentionally stable so renaming a site does not break consumers.
 schema. Collection slugs remain stable. Schema changes are rejected with a
 `422 validation_failed` response if any existing entry would become invalid.
 
+Collection fields may define optional constraints:
+
+- `minLength` and `maxLength` for `string`, `text`, and `url` fields.
+- `min` and `max` for `number` fields.
+
+Constraints are validated when schemas are created or edited and enforced for
+all subsequent entry creation and updates.
+
 ## 🔐 Authentication Endpoints
 
 ### Register User
