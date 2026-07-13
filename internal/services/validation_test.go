@@ -32,3 +32,19 @@ func TestValidateEntryData(t *testing.T) {
 		}
 	}
 }
+
+func TestValidateCollectionSchemaRejectsInvalidDefinitions(t *testing.T) {
+	err := validateCollectionSchema("", []models.Field{
+		{Name: "title", Type: models.FieldTypeString},
+		{Name: "title", Type: "unknown"},
+	})
+	var validationError *ValidationError
+	if !errors.As(err, &validationError) {
+		t.Fatalf("expected validation error, got %v", err)
+	}
+	for _, field := range []string{"name", "fields.1.name", "fields.1.type"} {
+		if validationError.Fields[field] == "" {
+			t.Errorf("expected error for %s", field)
+		}
+	}
+}

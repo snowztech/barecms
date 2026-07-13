@@ -155,6 +155,17 @@ collection schema before it replaces the existing entry data.
 
 `page` starts at 1 and `limit` is capped at 100.
 
+### Update a site
+
+`PUT /api/sites/:siteId` accepts `{ "name": "New name" }`. The public slug is
+intentionally stable so renaming a site does not break consumers.
+
+### Update a collection
+
+`PUT /api/collections/:collectionId` accepts `name` and the complete `fields`
+schema. Collection slugs remain stable. Schema changes are rejected with a
+`422 validation_failed` response if any existing entry would become invalid.
+
 ## 🔐 Authentication Endpoints
 
 ### Register User

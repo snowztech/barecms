@@ -14,3 +14,8 @@ type CreateCollectionRequest struct {
 	Name   string  `json:"name"`
 	Fields []Field `json:"fields"`
 }
+
+type UpdateCollectionRequest struct {
+	Name   string  `json:"name"`
+	Fields []Field `json:"fields"`
+}

@@ -2,15 +2,19 @@ import React, { useState } from "react";
 import { useApi } from "@/hooks/useApi";
 
 interface CreateSiteModalProps {
-  userId: string;
+  userId?: string;
   dialogRef: React.RefObject<HTMLDialogElement>;
+  siteId?: string;
+  initialName?: string;
 }
 
 const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
   userId,
   dialogRef,
+  siteId,
+  initialName = "",
 }) => {
-  const [siteName, setSiteName] = useState("");
+  const [siteName, setSiteName] = useState(initialName);
   const [error, setError] = useState<string | null>(null);
   const { request, loading } = useApi();
 
@@ -34,12 +38,11 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
 
     try {
       await request({
-        url: "/sites",
-        method: "POST",
+        url: siteId ? `/sites/${siteId}` : "/sites",
+        method: siteId ? "PUT" : "POST",
         data: { name: siteName, userId },
       });
 
-      console.log("Site created successfully");
       closeDialog();
       setTimeout(() => {
         window.location.reload();
@@ -48,14 +51,14 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
       console.error(e);
       setError(e.message || "Failed to create site. Please try again.");
     } finally {
-      setSiteName("");
+      if (!siteId) setSiteName("");
     }
   };
 
   return (
     <dialog className="modal" ref={dialogRef}>
       <div className="modal-box">
-        <h3 className="font-bold text-lg mb-2">Create new site</h3>
+        <h3 className="font-bold text-lg mb-2">{siteId ? "Edit site" : "Create new site"}</h3>
         <input
           type="text"
           placeholder="Enter site name"
@@ -70,7 +73,7 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
             onClick={handleSubmit}
             className="btn btn-primary"
           >
-            {loading ? "Creating..." : "Create"}
+            {loading ? "Saving..." : siteId ? "Save changes" : "Create"}
           </button>
           <button className="btn" onClick={closeDialog}>
             Cancel

@@ -1,5 +1,7 @@
 package storage
 
+import "gorm.io/datatypes"
+
 func (s *Storage) CreateCollection(collection CollectionDB) error {
 	created := s.DB.Create(&collection)
 	if created.Error != nil {
@@ -24,6 +26,10 @@ func (s *Storage) GetCollection(id string) (CollectionDB, error) {
 		return CollectionDB{}, retrieved.Error
 	}
 	return collection, nil
+}
+
+func (s *Storage) UpdateCollection(id, name string, fields datatypes.JSON) error {
+	return s.DB.Model(&CollectionDB{}).Where("id = ?", id).Updates(map[string]any{"name": name, "fields": fields}).Error
 }
 
 func (s *Storage) GetCollectionsBySiteID(siteID string) ([]CollectionDB, error) {

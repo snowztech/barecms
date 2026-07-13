@@ -62,6 +62,18 @@ func (h *Handler) DeleteSite(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]string{"message": "Site deleted!"})
 }
 
+func (h *Handler) UpdateSite(c echo.Context) error {
+	var request models.UpdateSiteRequest
+	if err := c.Bind(&request); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
+	}
+	site, err := h.Service.UpdateSite(c.Param("id"), currentUserID(c), request)
+	if err != nil {
+		return serviceError(err)
+	}
+	return c.JSON(http.StatusOK, map[string]models.Site{"site": site})
+}
+
 func (h *Handler) GetSiteData(c echo.Context) error {
 	slug := c.Param("siteSlug")
 

@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func (s *Service) GetSites(userID string) ([]models.Site, error) {
@@ -59,6 +60,9 @@ func (s *Service) GetSiteWithCollections(id, userID string) (map[string]interfac
 }
 
 func (s *Service) CreateSite(request models.CreateSiteRequest, userID string) error {
+	if strings.TrimSpace(request.Name) == "" {
+		return &ValidationError{Fields: map[string]string{"name": "is required"}}
+	}
 	newSite := models.Site{
 		ID:     utils.GenerateUniqueID(),
 		Name:   request.Name,
@@ -71,6 +75,24 @@ func (s *Service) CreateSite(request models.CreateSiteRequest, userID string) er
 	}
 
 	return nil
+}
+
+func (s *Service) UpdateSite(id, userID string, request models.UpdateSiteRequest) (models.Site, error) {
+	if err := s.requireSiteOwner(userID, id); err != nil {
+		return models.Site{}, err
+	}
+	name := strings.TrimSpace(request.Name)
+	if name == "" {
+		return models.Site{}, &ValidationError{Fields: map[string]string{"name": "is required"}}
+	}
+	if err := s.Storage.UpdateSiteName(id, name); err != nil {
+		return models.Site{}, err
+	}
+	site, err := s.Storage.GetSite(id)
+	if err != nil {
+		return models.Site{}, err
+	}
+	return mapToSite(site), nil
 }
 
 func (s *Service) DeleteSite(id, userID string) error {

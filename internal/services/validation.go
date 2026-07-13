@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -80,4 +81,32 @@ func validateFieldValue(fieldType models.FieldType, value any) string {
 		}
 	}
 	return ""
+}
+
+func validateCollectionSchema(name string, fields []models.Field) error {
+	problems := make(map[string]string)
+	if strings.TrimSpace(name) == "" {
+		problems["name"] = "is required"
+	}
+	if len(fields) == 0 {
+		problems["fields"] = "must contain at least one field"
+	}
+	seen := make(map[string]bool, len(fields))
+	for index, field := range fields {
+		key := fmt.Sprintf("fields.%d", index)
+		fieldName := strings.TrimSpace(field.Name)
+		if fieldName == "" {
+			problems[key+".name"] = "is required"
+		} else if seen[fieldName] {
+			problems[key+".name"] = "must be unique"
+		}
+		seen[fieldName] = true
+		if !models.IsValidFieldType(string(field.Type)) {
+			problems[key+".type"] = "is invalid"
+		}
+	}
+	if len(problems) > 0 {
+		return &ValidationError{Fields: problems}
+	}
+	return nil
 }

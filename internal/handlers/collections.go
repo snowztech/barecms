@@ -54,3 +54,15 @@ func (h *Handler) DeleteCollection(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "Collection deleted!"})
 }
+
+func (h *Handler) UpdateCollection(c echo.Context) error {
+	var request models.UpdateCollectionRequest
+	if err := c.Bind(&request); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
+	}
+	collection, err := h.Service.UpdateCollection(c.Param("id"), currentUserID(c), request)
+	if err != nil {
+		return serviceError(err)
+	}
+	return c.JSON(http.StatusOK, collection)
+}
