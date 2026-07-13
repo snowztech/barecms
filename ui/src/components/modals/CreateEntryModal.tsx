@@ -1,6 +1,6 @@
 import { Field, FieldType } from "@/types/fields";
 import { useEffect, useState } from "react";
-import { useApi } from "@/hooks/useApi";
+import { ApiRequestError, useApi } from "@/hooks/useApi";
 import MediaPicker from "@/components/MediaPicker";
 
 interface CreateEntryModalProps {
@@ -22,6 +22,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
 }) => {
   const [formState, setFormState] = useState<Record<string, any>>({});
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const { request, loading } = useApi();
 
   const closeDialog = () => {
@@ -50,6 +51,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
   ) => {
     const { name, value } = e.target;
     setFormState((prevState) => ({ ...prevState, [name]: value }));
+    setFieldErrors((current) => ({ ...current, [name]: "" }));
   };
 
   const handleSubmit = async () => {
@@ -58,11 +60,13 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
     );
 
     if (hasRequiredFields) {
-      setError("All fields are required.");
+      setFieldErrors(Object.fromEntries(fields.filter((field) => !field.optional && !formState[field.name]).map((field) => [field.name, "is required"])));
+      setError("Please correct the highlighted fields.");
       return;
     }
 
     setError(null);
+    setFieldErrors({});
     try {
       // Prepare data with types
       const dataWithTypes = fields.reduce(
@@ -88,11 +92,16 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
       setTimeout(() => {
         window.location.reload();
       }, 300);
-    } catch (e: any) {
-      console.error(e);
-      setError(e.message || "Failed to create entry. Please try again.");
+    } catch (e: unknown) {
+      if (e instanceof ApiRequestError) setFieldErrors(e.fields);
+      setError(e instanceof Error ? e.message : "Failed to save entry.");
     }
   };
+
+  const accessibilityProps = (field: Field) => ({
+    "aria-invalid": Boolean(fieldErrors[field.name]),
+    "aria-describedby": fieldErrors[field.name] ? `${field.name}-error` : undefined,
+  });
 
   const renderFieldInput = (field: Field) => {
     switch (field.type) {
@@ -106,6 +115,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             onChange={handleInputChange}
             className="input input-bordered w-full"
             required={!field.optional}
+            {...accessibilityProps(field)}
           />
         );
       case FieldType.STRING:
@@ -118,6 +128,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             onChange={handleInputChange}
             className="input input-bordered w-full"
             required={!field.optional}
+            {...accessibilityProps(field)}
           />
         );
       case FieldType.TEXT:
@@ -129,6 +140,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             onChange={handleInputChange}
             className="textarea textarea-bordered w-full"
             required={!field.optional}
+            {...accessibilityProps(field)}
           />
         );
       case FieldType.NUMBER:
@@ -141,6 +153,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             onChange={handleInputChange}
             className="input input-bordered w-full"
             required={!field.optional}
+            {...accessibilityProps(field)}
           />
         );
       case FieldType.BOOLEAN:
@@ -152,6 +165,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             onChange={handleInputChange}
             className="select select-bordered w-full"
             required={!field.optional}
+            {...accessibilityProps(field)}
           >
             <option disabled>
               Select an option
@@ -170,6 +184,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             onChange={handleInputChange}
             className="input input-bordered w-full"
             required={!field.optional}
+            {...accessibilityProps(field)}
           />
         );
       case FieldType.IMAGE:
@@ -177,10 +192,13 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
           <MediaPicker
             siteId={siteId}
             value={formState[field.name]}
-            onChange={(url) =>
-              setFormState((previous) => ({ ...previous, [field.name]: url }))
-            }
+            onChange={(url) => {
+              setFormState((previous) => ({ ...previous, [field.name]: url }));
+              setFieldErrors((current) => ({ ...current, [field.name]: "" }));
+            }}
             required={!field.optional}
+            invalid={Boolean(fieldErrors[field.name])}
+            ariaDescribedBy={fieldErrors[field.name] ? `${field.name}-error` : undefined}
           />
         );
       default:
@@ -193,6 +211,7 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
             onChange={handleInputChange}
             className="input input-bordered w-full"
             required={!field.optional}
+            {...accessibilityProps(field)}
           />
         );
     }
@@ -205,7 +224,10 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
         {error && <p className="text-red-500 mb-4">{error}</p>}
         <div className="mt-4">
           {fields.map((field) => (
-            <div key={field.name} className="mb-4">
+            <div
+              key={field.name}
+              className={`mb-4 rounded ${fieldErrors[field.name] ? "ring-1 ring-error p-2" : ""}`}
+            >
               <label
                 className="block text-sm font-medium text-gray-700 mb-2"
                 htmlFor={field.name}
@@ -213,6 +235,11 @@ const CreateEntryModal: React.FC<CreateEntryModalProps> = ({
                 {field.name} ({field.type}{field.optional && ', optional'})
               </label>
               {renderFieldInput(field)}
+              {fieldErrors[field.name] && (
+                <p id={`${field.name}-error`} role="alert" className="text-sm text-error mt-1">
+                  {fieldErrors[field.name]}
+                </p>
+              )}
             </div>
           ))}
         </div>

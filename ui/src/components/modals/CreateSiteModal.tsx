@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useApi } from "@/hooks/useApi";
+import { ApiRequestError, useApi } from "@/hooks/useApi";
 
 interface CreateSiteModalProps {
   userId?: string;
@@ -16,11 +16,13 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
 }) => {
   const [siteName, setSiteName] = useState(initialName);
   const [error, setError] = useState<string | null>(null);
+  const [nameError, setNameError] = useState<string | null>(null);
   const { request, loading } = useApi();
 
   const handleSiteNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSiteName(e.target.value);
     setError(null);
+    setNameError(null);
   };
 
   const closeDialog = () => {
@@ -33,6 +35,7 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
     event.preventDefault();
     if (siteName.trim() === "") {
       setError("Site name cannot be empty.");
+      setNameError("is required");
       return;
     }
 
@@ -47,9 +50,9 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
       setTimeout(() => {
         window.location.reload();
       }, 300);
-    } catch (e: any) {
-      console.error(e);
-      setError(e.message || "Failed to create site. Please try again.");
+    } catch (e: unknown) {
+      if (e instanceof ApiRequestError) setNameError(e.fields.name || null);
+      setError(e instanceof Error ? e.message : "Failed to save site.");
     } finally {
       if (!siteId) setSiteName("");
     }
@@ -62,10 +65,13 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
         <input
           type="text"
           placeholder="Enter site name"
-          className="input input-bordered w-full"
+          className={`input input-bordered w-full ${nameError ? "input-error" : ""}`}
           value={siteName}
           onChange={handleSiteNameChange}
+          aria-invalid={Boolean(nameError)}
+          aria-describedby={nameError ? "site-name-error" : undefined}
         />
+        {nameError && <p id="site-name-error" role="alert" className="text-sm text-error mt-1">{nameError}</p>}
         {error && <p className="text-red-500 mt-2">{error}</p>}
         <div className="modal-action">
           <button
