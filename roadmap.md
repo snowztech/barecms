@@ -62,13 +62,14 @@ The basics every CMS needs. Without these, MCP positioning means nothing.
   - Bug-free CRUD for every model
   - Loading, empty, and error states
   - Confirm dialogs on destructive actions
-- [ ] **Docker docs**
-  - Document every environment variable
-  - Provide `.env.production` example
+- [x] **Docker and self-hosting**
+  - [x] Document production environment variables
+  - [x] Provide a production environment template
   - [x] Add liveness `/healthz`, database readiness `/readyz`, and container health check (`reliability/health-readiness`)
   - [x] Fail startup when database initialization fails
   - [x] Reproducible multi-stage build, static binary, pinned runtime, and non-root container (`reliability/container-hardening`)
   - [x] Production frontend dependency audit enforced in CI
+  - [x] Document database and media backup/restore verification (`docs/self-hosting-polish`)
 
 ## Phase 2. MCP-native pivot
 
