@@ -41,6 +41,8 @@ func Setup(service *services.Service, config configs.AppConfig) *echo.Echo {
 
 	// Public site data endpoint
 	api.GET("/:siteSlug/data", h.GetSiteData)
+	api.GET("/content/:siteSlug/:collectionSlug", h.GetPublicEntries)
+	api.GET("/content/:siteSlug/:collectionSlug/:entryId", h.GetPublicEntry)
 	api.GET("/files/:fileId", h.GetMedia)
 
 	// Auth routes (public)

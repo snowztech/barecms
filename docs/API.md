@@ -105,6 +105,21 @@ curl -X GET http://localhost:8080/api/myblog/data
 
 This simple structure makes it easy to consume in frontend applications - you can directly access `response.data.articles` to get all articles, or `response.data.products` for products, etc.
 
+### Paginated public content
+
+For production consumers, prefer the bounded content endpoints over downloading
+the complete site payload:
+
+```text
+GET /api/content/:siteSlug/:collectionSlug?page=1&limit=20
+GET /api/content/:siteSlug/:collectionSlug/:entryId
+```
+
+Collection responses contain `entries` and `pagination`; limits are capped at
+100. Public entries include their opaque `id` alongside flattened field values.
+Responses use `Cache-Control: public, max-age=60, stale-while-revalidate=300`.
+The original `/api/:siteSlug/data` endpoint remains available for compatibility.
+
 ---
 
 ## Media files
