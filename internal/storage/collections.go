@@ -28,6 +28,15 @@ func (s *Storage) GetCollection(id string) (CollectionDB, error) {
 	return collection, nil
 }
 
+func (s *Storage) GetCollectionBySiteAndSlug(siteSlug, collectionSlug string) (CollectionDB, error) {
+	var collection CollectionDB
+	err := s.DB.Table("collections").Select("collections.*").
+		Joins("JOIN sites ON sites.id = collections.site_id").
+		Where("sites.slug = ? AND collections.slug = ?", siteSlug, collectionSlug).
+		First(&collection).Error
+	return collection, err
+}
+
 func (s *Storage) UpdateCollection(id, name string, fields datatypes.JSON) error {
 	return s.DB.Model(&CollectionDB{}).Where("id = ?", id).Updates(map[string]any{"name": name, "fields": fields}).Error
 }

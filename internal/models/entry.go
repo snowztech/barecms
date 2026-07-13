@@ -28,3 +28,8 @@ type EntryPage struct {
 	Entries    []Entry    `json:"entries"`
 	Pagination Pagination `json:"pagination"`
 }
+
+type PublicEntryPage struct {
+	Entries    []map[string]any `json:"entries"`
+	Pagination Pagination       `json:"pagination"`
+}

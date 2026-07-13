@@ -17,6 +17,12 @@ func (s *Storage) GetEntryByID(id string) (EntryDB, error) {
 	return entry, nil
 }
 
+func (s *Storage) GetEntryInCollection(id, collectionID string) (EntryDB, error) {
+	var entry EntryDB
+	err := s.DB.Where("id = ? AND collection_id = ?", id, collectionID).First(&entry).Error
+	return entry, err
+}
+
 func (s *Storage) GetEntriesByCollectionID(collectionID string) ([]EntryDB, error) {
 	var entries []EntryDB
 	err := s.DB.Find(&entries, "collection_id = ?", collectionID).Error

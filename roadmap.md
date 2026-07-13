@@ -49,6 +49,8 @@ The basics every CMS needs. Without these, MCP positioning means nothing.
   - Lock response shapes for sites, collections, entries
   - [x] Bounded pagination and metadata for collection entries (`feature/api-pagination`)
   - [ ] Pagination on remaining authenticated list endpoints
+  - [x] Bounded public collection and single-entry endpoints with cache policy (`feature/public-content-api`)
+  - [x] Preserve legacy whole-site endpoint compatibility
 - [ ] **Database integrity and migrations**
   - [x] Transactional site, collection, and account deletion (`reliability/database-integrity`)
   - [x] Cascade media metadata cleanup with best-effort disk cleanup
